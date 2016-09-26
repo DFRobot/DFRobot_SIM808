@@ -35,7 +35,6 @@
 #include <Arduino.h>
 #include <SoftwareSerial.h>
 
-
 #define DEFAULT_TIMEOUT     		 5   //seconds
 #define DEFAULT_INTERCHAR_TIMEOUT 1500   //miliseconds
 
