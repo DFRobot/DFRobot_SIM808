@@ -1,6 +1,6 @@
 /*!
  * @file DFRobot_sim808.cpp
- * @A library  for DFRobot's SIM808 GPS/GPRS/GSM Shield
+ * @A library  for DFRobot's SIM808 GPS/DFRobot_SIM808/GSM Shield
  *
  * @copyright	[DFRobot](http://www.dfrobot.com), 2016
  *
@@ -32,16 +32,16 @@
 #include <stdio.h>
 #include "DFRobot_sim808.h"
 
-extern Stream *serialSIM900;
+extern Stream *serialSIM808;
 
-GPRS* GPRS::inst;
+DFRobot_SIM808* DFRobot_SIM808::inst;
 char receivedStackIndex = 0;
 char receivedStack[130];
 const char *des = "$GPRMC";
 
 //char *receivedStack="$GPRMC,165445.000,A,3110.8635,N,12133.4627,E,0.58,70.26,220916,,,A*57";
 
-GPRS::GPRS(HardwareSerial *mySerial)
+DFRobot_SIM808::DFRobot_SIM808(HardwareSerial *mySerial)
 {
     inst = this;	
 	serialFlag = 1;
@@ -49,7 +49,7 @@ GPRS::GPRS(HardwareSerial *mySerial)
     sim808_init(mySerial, 1);
 }
 
-GPRS::GPRS(SoftwareSerial *mySerial)
+DFRobot_SIM808::DFRobot_SIM808(SoftwareSerial *mySerial)
 {
     inst = this;
 	serialFlag = 0;
@@ -57,7 +57,7 @@ GPRS::GPRS(SoftwareSerial *mySerial)
    sim808_init(mySerial, 0);
 }
 
-bool GPRS::init(void)
+bool DFRobot_SIM808::init(void)
 {
     //检查AT指令是否有效
 	if(!sim808_check_with_cmd("AT\r\n","OK\r\n",CMD)){   
@@ -78,12 +78,12 @@ bool GPRS::init(void)
     return true;
 }
 
-bool GPRS::checkPowerUp(void)
+bool DFRobot_SIM808::checkPowerUp(void)
 {
   return sim808_check_with_cmd("AT\r\n","OK\r\n",CMD);
 }
 
-void GPRS::powerUpDown(uint8_t pin)
+void DFRobot_SIM808::powerUpDown(uint8_t pin)
 {
   // power on pulse for SIM900 Shield
   digitalWrite(pin,LOW);
@@ -94,7 +94,7 @@ void GPRS::powerUpDown(uint8_t pin)
   delay(3000);
 }
 
-void GPRS::powerReset(uint8_t pin)
+void DFRobot_SIM808::powerReset(uint8_t pin)
 {
   // reset for SIM800L board.
   // RST pin has to be OUTPUT, HIGH
@@ -105,7 +105,7 @@ void GPRS::powerReset(uint8_t pin)
 }
   
   
-bool GPRS::checkSIMStatus(void)
+bool DFRobot_SIM808::checkSIMStatus(void)
 {
     char gprsBuffer[32];
     int count = 0;
@@ -125,7 +125,7 @@ bool GPRS::checkSIMStatus(void)
     return true;
 }
 
-bool GPRS::sendSMS(char *number, char *data)
+bool DFRobot_SIM808::sendSMS(char *number, char *data)
 {
     //char cmd[32];
     if(!sim808_check_with_cmd("AT+CMGF=1\r\n", "OK\r\n", CMD)) { // Set message mode to ASCII
@@ -148,7 +148,7 @@ bool GPRS::sendSMS(char *number, char *data)
     return sim808_wait_for_resp("OK\r\n", CMD);
 }
 
-char GPRS::isSMSunread()
+char DFRobot_SIM808::isSMSunread()
 {
     char gprsBuffer[48];  //48 is enough to see +CMGL:
     char *s;
@@ -218,7 +218,7 @@ char GPRS::isSMSunread()
     return -1;
 }
 
-bool GPRS::readSMS(int messageIndex, char *message, int length, char *phone, char *datetime)  
+bool DFRobot_SIM808::readSMS(int messageIndex, char *message, int length, char *phone, char *datetime)  
 {
   /* Response is like:
   AT+CMGR=2
@@ -284,7 +284,7 @@ bool GPRS::readSMS(int messageIndex, char *message, int length, char *phone, cha
     return false;    
 }
 
-bool GPRS::readSMS(int messageIndex, char *message,int length)
+bool DFRobot_SIM808::readSMS(int messageIndex, char *message,int length)
 {
     int i = 0;
     char gprsBuffer[100];
@@ -315,7 +315,7 @@ bool GPRS::readSMS(int messageIndex, char *message,int length)
     return false;   
 }
 
-bool GPRS::deleteSMS(int index)
+bool DFRobot_SIM808::deleteSMS(int index)
 {
     //char cmd[16];
 	char num[4];
@@ -331,7 +331,7 @@ bool GPRS::deleteSMS(int index)
 	return sim808_check_with_cmd("\r","OK\r\n",CMD);	
 }
 
-bool GPRS::callUp(char *number)
+bool DFRobot_SIM808::callUp(char *number)
 {
     //char cmd[24];
     if(!sim808_check_with_cmd("AT+COLP=1\r\n","OK\r\n",CMD)) {
@@ -347,22 +347,22 @@ bool GPRS::callUp(char *number)
     return true;
 }
 
-void GPRS::answer(void)
+void DFRobot_SIM808::answer(void)
 {
     sim808_send_cmd("ATA\r\n");  //TO CHECK: ATA doesnt return "OK" ????
 }
 
-bool GPRS::hangup(void)
+bool DFRobot_SIM808::hangup(void)
 {
     return sim808_check_with_cmd("ATH\r\n","OK\r\n",CMD);
 }
 
-bool GPRS::disableCLIPring(void)
+bool DFRobot_SIM808::disableCLIPring(void)
 {
     return sim808_check_with_cmd("AT+CLIP=0\r\n","OK\r\n",CMD);
 }
 
-bool GPRS::getSubscriberNumber(char *number)
+bool DFRobot_SIM808::getSubscriberNumber(char *number)
 {
 	//AT+CNUM								--> 7 + CR = 8
 	//+CNUM: "","+628157933874",145,7,4		--> CRLF + 45 + CRLF = 49
@@ -393,7 +393,7 @@ bool GPRS::getSubscriberNumber(char *number)
     return false;
 }
 
-bool GPRS::isCallActive(char *number)
+bool DFRobot_SIM808::isCallActive(char *number)
 {
     char gprsBuffer[46];  //46 is enough to see +CPAS: and CLCC:
     char *p, *s;
@@ -469,7 +469,7 @@ bool GPRS::isCallActive(char *number)
     return false;
 }
 
-bool GPRS::getDateTime(char *buffer)
+bool DFRobot_SIM808::getDateTime(char *buffer)
 {
 	//If it doesn't work may be for two reasons:
 	//		1. Your carrier doesn't give that information
@@ -510,7 +510,7 @@ bool GPRS::getDateTime(char *buffer)
     return false;
 }
 
-bool GPRS::getSignalStrength(int *buffer)
+bool DFRobot_SIM808::getSignalStrength(int *buffer)
 {
 	//AT+CSQ						--> 6 + CR = 10
 	//+CSQ: <rssi>,<ber>			--> CRLF + 5 + CRLF = 9						
@@ -541,7 +541,7 @@ bool GPRS::getSignalStrength(int *buffer)
 	return false;
 }
 
-bool GPRS::sendUSSDSynchronous(char *ussdCommand, char *resultcode, char *response)
+bool DFRobot_SIM808::sendUSSDSynchronous(char *ussdCommand, char *resultcode, char *response)
 {
 	//AT+CUSD=1,"{command}"
 	//OK
@@ -581,13 +581,13 @@ bool GPRS::sendUSSDSynchronous(char *ussdCommand, char *resultcode, char *respon
 	return false;
 }
 
-bool GPRS::cancelUSSDSession(void)
+bool DFRobot_SIM808::cancelUSSDSession(void)
 {
     return sim808_check_with_cmd("AT+CUSD=2\r\n","OK\r\n",CMD);
 }
 
 //Here is where we ask for APN configuration, with F() so we can save MEMORY
-bool GPRS::join(const __FlashStringHelper *apn, const __FlashStringHelper *userName, const __FlashStringHelper *passWord)
+bool DFRobot_SIM808::join(const __FlashStringHelper *apn, const __FlashStringHelper *userName, const __FlashStringHelper *passWord)
 {
 	byte i;
     char *p, *s;
@@ -647,12 +647,12 @@ bool GPRS::join(const __FlashStringHelper *apn, const __FlashStringHelper *userN
     return false;
 } 
 
-void GPRS::disconnect()
+void DFRobot_SIM808::disconnect()
 {
     sim808_send_cmd("AT+CIPSHUT\r\n");
 }
 
-bool GPRS::connect(Protocol ptl,const char * host, int port, int timeout, int chartimeout)
+bool DFRobot_SIM808::connect(Protocol ptl,const char * host, int port, int timeout, int chartimeout)
 {
     //char cmd[64];
 	char num[4];
@@ -691,7 +691,7 @@ bool GPRS::connect(Protocol ptl,const char * host, int port, int timeout, int ch
 }
 
 //Overload with F() macro to SAVE memory
-bool GPRS::connect(Protocol ptl,const __FlashStringHelper *host, const __FlashStringHelper *port, int timeout, int chartimeout)
+bool DFRobot_SIM808::connect(Protocol ptl,const __FlashStringHelper *host, const __FlashStringHelper *port, int timeout, int chartimeout)
 {
     //char cmd[64];
     char resp[96];
@@ -717,7 +717,7 @@ bool GPRS::connect(Protocol ptl,const __FlashStringHelper *host, const __FlashSt
     return false;
 }
 
-bool GPRS::is_connected(void)
+bool DFRobot_SIM808::is_connected(void)
 {
     char resp[96];
     sim808_send_cmd("AT+CIPSTATUS\r\n");
@@ -732,7 +732,7 @@ bool GPRS::is_connected(void)
     }
 }
 
-bool GPRS::close()
+bool DFRobot_SIM808::close()
 {
     // if not connected, return
     if (!is_connected()) {
@@ -741,22 +741,22 @@ bool GPRS::close()
     return sim808_check_with_cmd("AT+CIPCLOSE\r\n", "CLOSE OK\r\n", CMD);
 }
 
-int GPRS::readable(void)
+int DFRobot_SIM808::readable(void)
 {
     return sim808_check_readable();
 }
 
-int GPRS::wait_readable(int wait_time)
+int DFRobot_SIM808::wait_readable(int wait_time)
 {
     return sim808_wait_readable(wait_time);
 }
 
-int GPRS::wait_writeable(int req_size)
+int DFRobot_SIM808::wait_writeable(int req_size)
 {
     return req_size+1;
 }
 
-int GPRS::send(const char * str, int len)
+int DFRobot_SIM808::send(const char * str, int len)
 {
     //char cmd[32];
 	char num[4];
@@ -785,14 +785,14 @@ int GPRS::send(const char * str, int len)
 }
     
 
-int GPRS::recv(char* buf, int len)
+int DFRobot_SIM808::recv(char* buf, int len)
 {
     sim808_clean_buffer(buf,len);
     sim808_read_buffer(buf,len);   //Ya he llamado a la funcion con la longitud del buffer - 1 y luego le estoy a帽adiendo el 0
     return strlen(buf);
 }
 
-void GPRS::listen(void)
+void DFRobot_SIM808::listen(void)
 {
 	 if(serialFlag)
 		; //hgprsSerial->listen();
@@ -801,7 +801,7 @@ void GPRS::listen(void)
 
 }
 
-bool GPRS::isListening(void)
+bool DFRobot_SIM808::isListening(void)
 {
 	// if(serialFlag)
 		// return hgprsSerial.isListening();
@@ -809,7 +809,7 @@ bool GPRS::isListening(void)
 		// return gprsSerial.isListening();
 }
 
-uint32_t GPRS::str_to_ip(const char* str)
+uint32_t DFRobot_SIM808::str_to_ip(const char* str)
 {
     uint32_t ip = 0;
     char* p = (char*)str;
@@ -825,17 +825,17 @@ uint32_t GPRS::str_to_ip(const char* str)
     return ip;
 }
 
-char* GPRS::getIPAddress()
+char* DFRobot_SIM808::getIPAddress()
 {
     //I have already a buffer with ip_string: snprintf(ip_string, sizeof(ip_string), "%d.%d.%d.%d", (_ip>>24)&0xff,(_ip>>16)&0xff,(_ip>>8)&0xff,_ip&0xff); 
     return ip_string;
 }
 
-unsigned long GPRS::getIPnumber()
+unsigned long DFRobot_SIM808::getIPnumber()
 {
     return _ip;
 }
-/* NOT USED bool GPRS::gethostbyname(const char* host, uint32_t* ip)
+/* NOT USED bool DFRobot_SIM808::gethostbyname(const char* host, uint32_t* ip)
 {
     uint32_t addr = str_to_ip(host);
     char buf[17];
@@ -848,16 +848,16 @@ unsigned long GPRS::getIPnumber()
 }
 */
 
-bool GPRS::getLocation(const __FlashStringHelper *apn, float *longitude, float *latitude)
+bool DFRobot_SIM808::getLocation(const __FlashStringHelper *apn, float *longitude, float *latitude)
 {    	
 	int i = 0;
     char gprsBuffer[80];
 	char buffer[20];
     char *s;
     
-	//send AT+SAPBR=3,1,"Contype","GPRS"
-	sim808_check_with_cmd("AT+SAPBR=3,1,\"Contype\",\"GPRS\"\r","OK\r\n",CMD);
-	//sen AT+SAPBR=3,1,"APN","GPRS_APN"
+	//send AT+SAPBR=3,1,"Contype","DFRobot_SIM808"
+	sim808_check_with_cmd("AT+SAPBR=3,1,\"Contype\",\"DFRobot_SIM808\"\r","OK\r\n",CMD);
+	//sen AT+SAPBR=3,1,"APN","DFRobot_SIM808_APN"
 	sim808_send_cmd("AT+SAPBR=3,1,\"APN\",\"");
 	if (apn) {
       sim808_send_cmd(apn);
@@ -894,7 +894,7 @@ bool GPRS::getLocation(const __FlashStringHelper *apn, float *longitude, float *
 	return false;
 }
 
-bool GPRS::attachGPS()
+bool DFRobot_SIM808::attachGPS()
 {
 	 if(!sim808_check_with_cmd("AT+CGNSPWR=1\r\n", "OK\r\n", CMD)) { 
         return false;
@@ -905,7 +905,7 @@ bool GPRS::attachGPS()
 	return true;
 }
 
-bool GPRS::detachGPS()
+bool DFRobot_SIM808::detachGPS()
 {
 	 if(!sim808_check_with_cmd("AT+CGNSPWR=0\r\n", "OK\r\n", CMD)) { 
         return false;
@@ -913,14 +913,14 @@ bool GPRS::detachGPS()
 	return true;
 }
 
-bool GPRS::getGPRMC()
+bool DFRobot_SIM808::getGPRMC()
 {
 	char c;
 	static bool endflag  = false;
 	static char count;
 		
-	while(serialSIM900->available())   //串口有数据
-	{	c = serialSIM900->read();
+	while(serialSIM808->available())   //串口有数据
+	{	c = serialSIM808->read();
 		if(endflag)
 		{
 			if(count--)
@@ -960,7 +960,7 @@ bool GPRS::getGPRMC()
 	return false;
 }
 
-bool GPRS::parseGPRMC(char *gpsbuffer)
+bool DFRobot_SIM808::parseGPRMC(char *gpsbuffer)
 {
 	if(strstr(gpsbuffer,des) == NULL)  //不是$GPRMC字符串开头的GPS信息
 	{
@@ -983,7 +983,7 @@ bool GPRS::parseGPRMC(char *gpsbuffer)
 }
 
 // Parse a (potentially negative) number with up to 2 decimal digits -xxxx.yy
-int32_t GPRS::parseDecimal(const char *term)
+int32_t DFRobot_SIM808::parseDecimal(const char *term)
 {
   bool negative = *term == '-';
   if (negative) ++term;
@@ -998,7 +998,7 @@ int32_t GPRS::parseDecimal(const char *term)
   return negative ? -ret : ret;
 }
 
- void GPRS::getTime(uint32_t time){
+ void DFRobot_SIM808::getTime(uint32_t time){
 	 GPSdata.hour     =  time / 1000000;
 	 GPSdata.minute  = (time / 10000) % 100;
 	 GPSdata.second = (time / 100) % 100;
@@ -1006,7 +1006,7 @@ int32_t GPRS::parseDecimal(const char *term)
  }
 
  
-  void GPRS::getDate(uint32_t date){
+  void DFRobot_SIM808::getDate(uint32_t date){
 	 uint16_t year = date % 100;
 	 GPSdata. year    =  year + 2000;	 
 	 GPSdata.month  = (date / 100) % 100;
@@ -1014,7 +1014,7 @@ int32_t GPRS::parseDecimal(const char *term)
  }
  
  
-bool GPRS::getGPS() 
+bool DFRobot_SIM808::getGPS() 
 {
 	 if(!getGPRMC())  //没有得到$GPRMC字符串开头的GPS信息
 		 return false;

@@ -31,15 +31,15 @@
 
 #include "sim808.h"
 
-//SoftwareSerial *serialSIM900 = NULL;
+//SoftwareSerial *serialSIM808 = NULL;
 
-Stream *serialSIM900 = NULL;
+Stream *serialSIM808 = NULL;
 
 /*
 void  sim808_init(void * uart_device, uint32_t baud)
 {
-    serialSIM900 = (SoftwareSerial*)uart_device;
-	  serialSIM900->begin(baud);
+    serialSIM808 = (SoftwareSerial*)uart_device;
+	  serialSIM808->begin(baud);
 }
 
 */
@@ -47,15 +47,15 @@ void  sim808_init(void * uart_device, uint32_t baud)
 void  sim808_init(void * uart_device, char num)
 {
     if(num)
-		serialSIM900 = (HardwareSerial*)uart_device;
+		serialSIM808 = (HardwareSerial*)uart_device;
 	else
-		serialSIM900 = (SoftwareSerial*)uart_device;
+		serialSIM808 = (SoftwareSerial*)uart_device;
 }
 
 
 int sim808_check_readable()
 {
-    return serialSIM900->available();
+    return serialSIM808->available();
 }
 
 int sim808_wait_readable (int wait_time)
@@ -76,7 +76,7 @@ int sim808_wait_readable (int wait_time)
 void sim808_flush_serial()
 {
     while(sim808_check_readable()){
-        serialSIM900->read();
+        serialSIM808->read();
     }
 }
 
@@ -88,7 +88,7 @@ void sim808_read_buffer(char *buffer, int count, unsigned int timeout, unsigned 
     prevChar = 0;
     while(1) {
         while (sim808_check_readable()) {
-            char c = serialSIM900->read();
+            char c = serialSIM808->read();
             prevChar = millis();
             buffer[i++] = c;
             if(i >= count)break;
@@ -114,12 +114,12 @@ void sim808_clean_buffer(char *buffer, int count)
 //HACERR quitar esta funcion ?
 void sim808_send_byte(uint8_t data)
 {
-	serialSIM900->write(data);
+	serialSIM808->write(data);
 }
 
 void sim808_send_char(const char c)
 {
-	serialSIM900->write(c);
+	serialSIM808->write(c);
 }
 
 void sim808_send_cmd(const char* cmd)
@@ -164,7 +164,7 @@ boolean sim808_wait_for_resp(const char* resp, DataType type, unsigned int timeo
     prevChar = 0;
     while(1) {
         if(sim808_check_readable()) {
-            char c = serialSIM900->read();
+            char c = serialSIM808->read();
             prevChar = millis();
             sum = (c==resp[sum]) ? sum+1 : 0;
             if(sum == len)break;

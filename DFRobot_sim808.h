@@ -1,6 +1,6 @@
 /*!
  * @file DFRobot_sim808.h
- * @n Header file for DFRobot's SIM808 GPS/GPRS/GSM Shield
+ * @n Header file for DFRobot's SIM808 GPS/DFRobot_SIM808/GSM Shield
  *
  * @copyright	[DFRobot](http://www.dfrobot.com), 2016
  *
@@ -33,8 +33,8 @@
 
 #include "sim808.h"
 
-/** GPRS class.
- *  used to realize GPRS communication
+/** DFRobot_SIM808 class.
+ *  used to realize DFRobot_SIM808 communication
  */ 
  
 enum Protocol {
@@ -43,31 +43,31 @@ enum Protocol {
     UDP    = 2,
 };
 
-class GPRS
+class DFRobot_SIM808
 {
 public:
-    /** Create GPRS instance
+    /** Create DFRobot_SIM808 instance
      *  @param number default phone number during mobile communication
      */
 	 
-    GPRS(uint8_t tx, uint8_t rx, uint32_t baudRate = 9600 ); 
-	GPRS(HardwareSerial *mySerial);
-	GPRS(SoftwareSerial *mySerial);
+    DFRobot_SIM808(uint8_t tx, uint8_t rx, uint32_t baudRate = 9600 ); 
+	DFRobot_SIM808(HardwareSerial *mySerial);
+	DFRobot_SIM808(SoftwareSerial *mySerial);
     
-    /** get instance of GPRS class
+    /** get instance of DFRobot_SIM808 class
      */
-    static GPRS* getInstance() {
+    static DFRobot_SIM808* getInstance() {
         return inst;
     };
     
-    /** initialize GPRS module including SIM card check & signal strength
+    /** initialize DFRobot_SIM808 module including SIM card check & signal strength
      *  @return true if connected, false otherwise
      */
 
     bool init(void);
 
    
-    /** check if GPRS module is powered on or not
+    /** check if DFRobot_SIM808 module is powered on or not
      *  @returns
      *      true on success
      *      false on error
@@ -75,7 +75,7 @@ public:
     bool checkPowerUp(void);
 
     
-    /** power Up GPRS module (JP has to be soldered)
+    /** power Up DFRobot_SIM808 module (JP has to be soldered)
      *  @param  pin pin 9 connected to JP jumper so we can power up and down through software
      *  @returns
      *      
@@ -121,7 +121,7 @@ public:
     bool readSMS(int messageIndex, char *message, int length, char *phone, char *datetime); 
 
     /** read SMS if getting a SMS message
-     *  @param  buffer  buffer that get from GPRS module(when getting a SMS, GPRS module will return a buffer array)
+     *  @param  buffer  buffer that get from DFRobot_SIM808 module(when getting a SMS, DFRobot_SIM808 module will return a buffer array)
      *  @param  message buffer used to get SMS message
      *  @param  check   whether to check phone number(we may only want to read SMS from specified phone number)
      *  @returns
@@ -234,26 +234,26 @@ public:
 	bool cancelUSSDSession(void);
 
 //////////////////////////////////////////////////////
-/// GPRS
+/// DFRobot_SIM808
 //////////////////////////////////////////////////////  
-   /**  Connect the GPRS module to the network.
+   /**  Connect the DFRobot_SIM808 module to the network.
      *  @return true if connected, false otherwise
      */
 	 
     bool join(const __FlashStringHelper *apn = 0, const __FlashStringHelper *userName = 0, const __FlashStringHelper *passWord = 0);
 
-    /** Disconnect the GPRS module from the network
+    /** Disconnect the DFRobot_SIM808 module from the network
      *  @returns
      */
     void disconnect(void);
     
     /** Open a tcp/udp connection with the specified host on the specified port
-     *  @param socket an endpoint of an inter-process communication flow of GPRS module,for SIM900 module, it is in [0,6]
+     *  @param socket an endpoint of an inter-process communication flow of DFRobot_SIM808 module,for SIM900 module, it is in [0,6]
      *  @param ptl protocol for socket, TCP/UDP can be choosen
      *  @param host host (can be either an ip address or a name. If a name is provided, a dns request will be established)
      *  @param port port
      *  @param timeout wait seconds till connected
-     *  @param chartimeout wait milliseconds between characters from GPRS module
+     *  @param chartimeout wait milliseconds between characters from DFRobot_SIM808 module
      *  @returns true if successful
      */
     bool connect(Protocol ptl, const char * host, int port, int timeout = 2 * DEFAULT_TIMEOUT, int chartimeout = 2 * DEFAULT_INTERCHAR_TIMEOUT);
@@ -269,18 +269,18 @@ public:
      */
     bool close(void);
 	
-    /** check if GPRS module is readable or not
+    /** check if DFRobot_SIM808 module is readable or not
      *  @returns true if readable
      */
     int readable(void);
 
-    /** wait a few time to check if GPRS module is readable or not
+    /** wait a few time to check if DFRobot_SIM808 module is readable or not
      *  @param socket socket
      *  @param wait_time time of waiting
      */
     int wait_readable(int wait_time);
 
-    /** wait a few time to check if GPRS module is writeable or not
+    /** wait a few time to check if DFRobot_SIM808 module is writeable or not
      *  @param socket socket
      *  @param wait_time time of waiting
      */
@@ -366,7 +366,7 @@ private:
 	byte serialFlag;
     bool checkSIMStatus(void);
     uint32_t str_to_ip(const char* str);
-    static GPRS* inst;
+    static DFRobot_SIM808* inst;
     uint32_t _ip;
     char ip_string[16]; //XXX.YYY.ZZZ.WWW + \0
 };
