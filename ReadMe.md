@@ -35,7 +35,7 @@
 
 
 ## How to use
-[English Wiki](https://www.dfrobot.com/wiki/index.php?title=SIM808_GPS/GPRS/GSM_Shield_SKU:_TEL0097)  
+[Wiki](https://www.dfrobot.com/wiki/index.php?title=SIM808_GPS/GPRS/GSM_Shield_SKU:_TEL0097)  
 
 ## Product Links
 [DFRobot](https://www.dfrobot.com/)
