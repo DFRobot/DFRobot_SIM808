@@ -1,9 +1,10 @@
 /*
-SIM808 Loop Handle
-
-This sketch is used to test  SIM808 GPS/GPRS/GSM Shield's call answering and 
-reading SMS function.To make it work, you should insert SIM card to SIM808 
-GPS/GPRS/GSM Shield,enjoy it!
+### Auto answer phone calls and read SMS Messages
+1. This example is used to test DFRobot_SIM808 GPS/GPRS/GSM Shield's call answering and
+   reading SMS function.
+2. Open the SIM808_LoopHandle example or copy these code to your project
+3. Download and dial the function switch to Arduino
+4. it will Auto-Answer phone calls or send SMS Messages to serial
 
 create on 2016/09/23, version: 1.0
 by jason

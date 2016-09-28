@@ -1,15 +1,9 @@
 /*
-SIM808 SMS Read
-
-This sketch is used to test SIM808 GPS/GPRS/GSM Shield's reading SMS 
-function.To make it work, you should insert SIM card to SIM808 
-GPS/GPRS/GSM Shield,enjoy it!
-
-There are two methods to read SMS:
-  1. SIM808_LoopHandle.ino  -> in order to recieve "+CMTI: "SM"" 
-      may be you need to send this command to your shield: "AT+CNMI=2,2,0,0,0"
-  2. SIM808_SMSread.ino -> you have to check if there are any 
-      UNREAD sms, and you don't need to check serial data continuosly
+### Read SMS messages
+ 1. This example is used to test DFRobot_SIM808 GPS/GPRS/GSM Shield's reading SMS
+ 2. Open the SIM808_SMSread example or copy these code to your project
+ 3. Download and dial the function switch to Arduino
+ 4. it will receive SMS Messages and send it to serial
 
 create on 2016/09/23, version: 1.0
 by jason

@@ -1,9 +1,11 @@
 /*
-SIM808 connect TCP
-
-This sketch is used to test  SIM808 GPS/GPRS/GSM Shield's send SMS func.
-to make it work, you should insert SIM card to SIM808 GPS/GPRS/GSM Shield
-and replace the phoneNumber,enjoy it!
+### Connect TCP and send GET request.
+1. This example is used to test DFRobot_SIM808 GPS/GPRS/GSM Shield's connect TCP and send GET request.
+2. Open the SIM808_TCPConnection example or copy these code to your project
+3. Download and dial the function switch to Arduino
+4. Open serial helper
+5. Waiting for a few minutes, until serial has sent "Connect mbed.org success"
+6. Serial will send "Hello world!"
 
 create on 2016/09/23, version: 1.0
 by jason

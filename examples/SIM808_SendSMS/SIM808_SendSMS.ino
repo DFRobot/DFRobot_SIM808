@@ -1,9 +1,9 @@
 /*
-SIM808 Send message
-
-This sketch is used to test  SIM808 GPS/GPRS/GSM Shield's send SMS func.
-to make it work, you should insert SIM card to SIM808 GPS/GPRS/GSM Shield
-and replace the phoneNumber,enjoy it!
+### Send SMS messages
+1. This example is used to test DFRobot_SIM808 GPS/GPRS/GSM Shield's send SMS func.
+2. Open the SIM808_SendSMS example or copy these code to your project
+3. Replace the phoneNumber：#define PHONE_NUMBER  "187******39"    
+4. Download and dial the function switch to Arduino, and enjoy it
 
 create on 2016/09/23, version: 1.0
 by jason

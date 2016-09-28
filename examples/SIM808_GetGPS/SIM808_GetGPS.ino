@@ -1,9 +1,10 @@
 /*
-SIM808 Get GPS  
-
-This sketch is used to test SIM808 GPS/GPRS/GSM Shield's callUp function.
-to make it work, you should insert SIM card to SIM808 GPS/GPRS/GSM Shield 
-and replace the phoneNumber,enjoy it!
+### Get GPS data
+1. This example is used to test SIM808 GPS/GPRS/GSM Shield's reading GPS data.
+2. Open the SIM808_GetGPS example or copy these code to your project
+3. Download and dial the function switch to Arduino
+4. open serial helper
+4. Place it outside, waiting for a few minutes and then it will send GPS data to serial
 
 create on 2016/09/23, version: 1.0
 by jason
