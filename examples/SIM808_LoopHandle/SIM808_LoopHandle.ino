@@ -1,9 +1,9 @@
 /*
 SIM808 Loop Handle
 
-This sketch is used to test seeeduino SIM808 GPS/GPRS/GSM Shield's call answering and 
-reading SMS function.To make it work, you should insert SIM card
-to SIM808 GPS/GPRS/GSM Shield,enjoy it!
+This sketch is used to test  SIM808 GPS/GPRS/GSM Shield's call answering and 
+reading SMS function.To make it work, you should insert SIM card to SIM808 
+GPS/GPRS/GSM Shield,enjoy it!
 
 create on 2016/09/23, version: 1.0
 by jason

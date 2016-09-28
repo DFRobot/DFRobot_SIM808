@@ -1,7 +1,7 @@
 /*
 SIM808 Call Up 
 
-This sketch is used to test seeeduino SIM808 GPS/GPRS/GSM Shield's callUp function.
+This sketch is used to test  SIM808 GPS/GPRS/GSM Shield's callUp function.
 to make it work, you should insert SIM card to SIM808 GPS/GPRS/GSM Shield 
 and replace the phoneNumber,enjoy it!
 create on 2016/09/23, version: 1.0

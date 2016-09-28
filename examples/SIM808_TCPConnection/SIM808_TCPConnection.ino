@@ -1,7 +1,7 @@
 /*
 SIM808 connect TCP
 
-This sketch is used to test seeeduino SIM808 GPS/GPRS/GSM Shield's send SMS func.
+This sketch is used to test  SIM808 GPS/GPRS/GSM Shield's send SMS func.
 to make it work, you should insert SIM card to SIM808 GPS/GPRS/GSM Shield
 and replace the phoneNumber,enjoy it!
 

@@ -2,8 +2,8 @@
 SIM808 SMS Read
 
 This sketch is used to test SIM808 GPS/GPRS/GSM Shield's reading SMS 
-function.To make it work, you should insert SIM card
-to SIM808 GPS/GPRS/GSM Shield,enjoy it!
+function.To make it work, you should insert SIM card to SIM808 
+GPS/GPRS/GSM Shield,enjoy it!
 
 There are two methods to read SMS:
   1. SIM808_LoopHandle.ino  -> in order to recieve "+CMTI: "SM"" 
