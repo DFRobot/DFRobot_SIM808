@@ -60,11 +60,15 @@ DFRobot_SIM808::DFRobot_SIM808(SoftwareSerial *mySerial)
 bool DFRobot_SIM808::init(void)
 {
     //检查AT指令是否有效
-	if(!sim808_check_with_cmd("AT\r\n","OK\r\n",CMD)){   
-	    
-		return false;
-		
+	if(!sim808_check_with_cmd("AT\r\n","OK\r\n",CMD)){   	    
+		return false;		
     }
+	
+	// Reset to factory defaults
+	if(!sim808_check_with_cmd("ATZ\r\n","OK\r\n",CMD)){   	    
+		return false;		
+    }
+	
 	//检查SIM是否可以打电话，发短信
 	// 1 : OK
     if(!sim808_check_with_cmd("AT+CFUN=1\r\n","OK\r\n",CMD)){
