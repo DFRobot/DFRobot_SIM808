@@ -129,7 +129,7 @@ bool DFRobot_SIM808::checkSIMStatus(void)
     return true;
 }
 
-bool DFRobot_SIM808::sendSMS(char *number, char *data)
+bool DFRobot_SIM808::sendSMS(const char *number, const char *data)
 {
     //char cmd[32];
     if(!sim808_check_with_cmd("AT+CMGF=1\r\n", "OK\r\n", CMD)) { // Set message mode to ASCII

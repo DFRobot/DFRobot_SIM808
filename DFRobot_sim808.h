@@ -97,7 +97,7 @@ public:
      *      false on success
      *      true on error
      */
-    bool sendSMS(char* number, char* data);
+    bool sendSMS(const char* number, const char* data);
 
     /** Check if there is any UNREAD SMS: this function DOESN'T change the UNREAD status of the SMS
      *  @returns
