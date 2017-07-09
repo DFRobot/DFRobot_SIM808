@@ -326,6 +326,11 @@ public:
 	//Open or Close GPS
 	bool  attachGPS();
 	bool  detachGPS();
+
+	//function to stop and start dataflow
+	bool startGpsDataflow();	
+	bool stopGpsDataflow();
+	
 	
      // Parse a (potentially negative) number with up to 2 decimal digits -xxxx.yy
 	 

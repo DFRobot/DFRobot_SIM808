@@ -911,11 +911,33 @@ bool DFRobot_SIM808::attachGPS()
 
 bool DFRobot_SIM808::detachGPS()
 {
-	 if(!sim808_check_with_cmd("AT+CGNSPWR=0\r\n", "OK\r\n", CMD)) { 
+	if(!sim808_check_with_cmd("AT+CGNSPWR=0\r\n", "OK\r\n", CMD)) { 
         return false;
     }
+	if(!sim808_check_with_cmd("AT+CGNSTST=0\r\n", "OK\r\n", CMD)) { 
+        return false;
+    }	
 	return true;
 }
+
+bool DFRobot_SIM808::stopGpsDataflow()
+{
+	if(!sim808_check_with_cmd("AT+CGNSTST=0\r\n", "OK\r\n", CMD)) { 
+        return false;
+    }	
+	return true;
+}
+
+bool DFRobot_SIM808::startGpsDataflow()
+{
+	if(!sim808_check_with_cmd("AT+CGNSTST=1\r\n", "OK\r\n", CMD)) { 
+        return false;
+    }	
+	return true;
+}
+
+
+
 
 bool DFRobot_SIM808::getGPRMC()
 {
