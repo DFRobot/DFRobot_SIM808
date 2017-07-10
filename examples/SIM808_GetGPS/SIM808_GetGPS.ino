@@ -55,9 +55,9 @@ void loop() {
     Serial.print(":");
     Serial.println(sim808.GPSdata.centisecond);
     Serial.print("latitude :");
-    Serial.println(sim808.GPSdata.lat);
+    Serial.println(sim808.GPSdata.lat, 6);
     Serial.print("longitude :");
-    Serial.println(sim808.GPSdata.lon);
+    Serial.println(sim808.GPSdata.lon, 6);
     Serial.print("speed_kph :");
     Serial.println(sim808.GPSdata.speed_kph);
     Serial.print("heading :");
