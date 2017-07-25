@@ -152,6 +152,29 @@ bool DFRobot_SIM808::sendSMS(const char *number, const char *data)
     return sim808_wait_for_resp("OK\r\n", CMD);
 }
 
+bool DFRobot_SIM808::sendSMS(const char *number, const __FlashStringHelper* data)
+{
+    //char cmd[32];
+    if(!sim808_check_with_cmd("AT+CMGF=1\r\n", "OK\r\n", CMD)) { // Set message mode to ASCII
+        return false;
+    }
+    delay(500);
+	sim808_flush_serial();
+	sim808_send_cmd("AT+CMGS=\"");
+	sim808_send_cmd(number);
+    //sprintf(cmd,"AT+CMGS=\"%s\"\r\n", number);
+	//snprintf(cmd, sizeof(cmd),"AT+CMGS=\"%s\"\r\n", number);
+//    if(!sim808_check_with_cmd(cmd,">",CMD)) {
+    if(!sim808_check_with_cmd("\"\r\n",">",CMD)) {
+        return false;
+    }
+    delay(1000);
+    sim808_send_cmd(data);
+    delay(500);
+    sim808_send_End_Mark();
+    return sim808_wait_for_resp("OK\r\n", CMD);
+}
+
 char DFRobot_SIM808::isSMSunread()
 {
     char gprsBuffer[48];  //48 is enough to see +CMGL:

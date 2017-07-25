@@ -98,7 +98,9 @@ public:
      *      true on error
      */
     bool sendSMS(const char* number, const char* data);
-
+    bool sendSMS(const char* number, const __FlashStringHelper* data);
+	
+	
     /** Check if there is any UNREAD SMS: this function DOESN'T change the UNREAD status of the SMS
      *  @returns
      *      1..20 on success, position/index where SMS is stored, suitable for the function ReadSMS
