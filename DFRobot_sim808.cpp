@@ -143,7 +143,7 @@ bool DFRobot_SIM808::sendSMS(const char *number, const char *data)
     //sprintf(cmd,"AT+CMGS=\"%s\"\r\n", number);
 	//snprintf(cmd, sizeof(cmd),"AT+CMGS=\"%s\"\r\n", number);
 //    if(!sim808_check_with_cmd(cmd,">",CMD)) {
-    if(!sim808_check_with_cmd("\"\r\n",">",CMD)) {
+    if(!sim808_check_with_cmd(F("\"\r\n"),">",CMD)) {
         return false;
     }
     delay(1000);
@@ -166,7 +166,7 @@ bool DFRobot_SIM808::sendSMS(const char *number, const __FlashStringHelper* data
     //sprintf(cmd,"AT+CMGS=\"%s\"\r\n", number);
 	//snprintf(cmd, sizeof(cmd),"AT+CMGS=\"%s\"\r\n", number);
 //    if(!sim808_check_with_cmd(cmd,">",CMD)) {
-    if(!sim808_check_with_cmd("\"\r\n",">",CMD)) {
+    if(!sim808_check_with_cmd(F("\"\r\n"),">",CMD)) {
         return false;
     }
     delay(1000);
@@ -251,7 +251,7 @@ char DFRobot_SIM808::isSMS(typeSMS type)
     char gprsBuffer[48];  //48 is enough to see +CMGL:
     char *s;
     
-	 sim808_check_with_cmd("AT+CMGF=1\r\n","OK\r\n",CMD);
+	 sim808_check_with_cmd(F("AT+CMGF=1\r\n"),"OK\r\n",CMD);
     delay(1000);
 
     //List of all UNREAD SMS and DON'T change the SMS UNREAD STATUS
@@ -411,7 +411,7 @@ bool DFRobot_SIM808::readSMS(int messageIndex, char *message,int length)
 	sim808_send_cmd( F("AT+CMGR="));
 	itoa(messageIndex, num, 10);
 	sim808_send_cmd(num);
-	sim808_send_cmd("\r\n");
+	sim808_send_cmd(F("\r\n"));
 //  sprintf(cmd,"AT+CMGR=%d\r\n",messageIndex);
 //    sim808_send_cmd(cmd);
     sim808_clean_buffer(gprsBuffer,sizeof(gprsBuffer));
@@ -442,7 +442,7 @@ bool DFRobot_SIM808::deleteSMS(int index)
     //return 0;
     // We have to wait OK response
 	//return sim808_check_with_cmd(cmd,"OK\r\n",CMD);
-	return sim808_check_with_cmd("\r","OK\r\n",CMD);	
+	return sim808_check_with_cmd(F("\r"),"OK\r\n",CMD);	
 }
 
 bool DFRobot_SIM808::callUp(char *number)
@@ -457,7 +457,7 @@ bool DFRobot_SIM808::callUp(char *number)
     //sim808_send_cmd(cmd);
 	sim808_send_cmd( F("ATD") );
 	sim808_send_cmd(number);
-	sim808_send_cmd(";\r\n");
+	sim808_send_cmd(F(";\r\n"));
     return true;
 }
 
@@ -671,7 +671,7 @@ bool DFRobot_SIM808::sendUSSDSynchronous(char *ussdCommand, char *resultcode, ch
     sim808_flush_serial();
     sim808_send_cmd( F("AT+CUSD=1,\"") );
     sim808_send_cmd(ussdCommand);
-    sim808_send_cmd("\"\r");
+    sim808_send_cmd(F("\"\r"));
     delay(500);			// I had beter results with this delay (caladeira) 
     if(!sim808_wait_for_resp("OK\r\n", CMD))
 		return false;
@@ -718,15 +718,15 @@ bool DFRobot_SIM808::join(const __FlashStringHelper *apn, const __FlashStringHel
     if (apn) {
       sim808_send_cmd(apn);
     }
-    sim808_send_cmd("\",\"");
+    sim808_send_cmd(F("\",\""));
     if (userName) {
       sim808_send_cmd(userName);
     }
-    sim808_send_cmd("\",\"");
+    sim808_send_cmd(F("\",\""));
     if (passWord) {
       sim808_send_cmd(passWord);
     }
-    sim808_check_with_cmd("\"\r\n", "OK\r\n", CMD);
+    sim808_check_with_cmd(F("\"\r\n"), "OK\r\n", CMD);
     
 
     //Brings up wireless connection
@@ -778,18 +778,18 @@ bool DFRobot_SIM808::connect(Protocol ptl,const char * host, int port, int timeo
     if(ptl == TCP) {
 		sim808_send_cmd( F("AT+CIPSTART=\"TCP\",\"") );
 		sim808_send_cmd(host);
-		sim808_send_cmd("\",");
+		sim808_send_cmd(F("\","));
 		itoa(port, num, 10);
 		sim808_send_cmd(num);
-		sim808_send_cmd("\r\n");
+		sim808_send_cmd(F("\r\n"));
 //        sprintf(cmd, "AT+CIPSTART=\"TCP\",\"%s\",%d\r\n",host, port);
     } else if(ptl == UDP) {
 		sim808_send_cmd( F("AT+CIPSTART=\"UDP\",\""));
 		sim808_send_cmd(host);
-		sim808_send_cmd("\",");
+		sim808_send_cmd(F("\","));
 		itoa(port, num, 10);
 		sim808_send_cmd(num);
-		sim808_send_cmd("\r\n");
+		sim808_send_cmd(F("\r\n"));
 
 	//        sprintf(cmd, "AT+CIPSTART=\"UDP\",\"%s\",%d\r\n",host, port);
     } else {
@@ -882,7 +882,7 @@ int DFRobot_SIM808::send(const char * str, int len)
 		sim808_send_cmd( F("AT+CIPSEND=") );
 		itoa(len, num, 10);
 		sim808_send_cmd(num);
-		if(!sim808_check_with_cmd("\r\n",">",CMD)) {
+		if(!sim808_check_with_cmd(F("\r\n"),">",CMD)) {
         //if(!sim808_check_with_cmd(cmd,">",CMD)) {
             return 0;
         }
@@ -978,7 +978,7 @@ bool DFRobot_SIM808::getLocation(const __FlashStringHelper *apn, float *longitud
 	if (apn) {
       sim808_send_cmd(apn);
     }
-    sim808_check_with_cmd("\"\r","OK\r\n",CMD);
+    sim808_check_with_cmd(F("\"\r"),"OK\r\n",CMD);
 	//send AT+SAPBR =1,1
 	sim808_check_with_cmd( F("AT+SAPBR=1,1\r"),"OK\r\n",CMD);
 	
@@ -1015,9 +1015,11 @@ bool DFRobot_SIM808::attachGPS()
 	 if(!sim808_check_with_cmd( F("AT+CGNSPWR=1\r\n"), "OK\r\n", CMD)) { 
         return false;
     }
+    /*
 	 if(!sim808_check_with_cmd( F("AT+CGNSTST=1\r\n"), "OK\r\n", CMD)) { 
         return false;
     }
+    */
 	return true;
 }
 
@@ -1256,10 +1258,10 @@ bool DFRobot_SIM808::getGPS()
 	return true;
 }
 
+
 /*
 	Parse GPS data after command AT+CGNSINF
-	stopGpsDataflow() must be called right after attachGPS() to avoid
-	constant data flow with gps data
+	GPS data flow must be stoped for this to work correctlly: stopGpsDataflow()
 	This way, gps function can be used simultaneously with other chip functions
 	unlike getGPS() that needs gps data flow to be on
 	
@@ -1280,7 +1282,7 @@ bool DFRobot_SIM808::getInfGPS()
 	char *s, *tok;
 
 	sim808_flush_serial();
-	sim808_send_cmd("AT+CGNSINF\r");
+	sim808_send_cmd(F("AT+CGNSINF\r"));
 	sim808_clean_buffer(gprsBuffer, 120);
 	sim808_read_buffer(gprsBuffer, 120, DEFAULT_TIMEOUT);
 	if (NULL != (s = strstr(gprsBuffer, "+CGNSINF:"))) {
@@ -1293,7 +1295,7 @@ bool DFRobot_SIM808::getInfGPS()
 		if ((tok = strsep(&s,",")) == NULL) return false;
 		if (atoi(tok) != 1) return false;	// valid data only after fix
 
-		// grab time & date
+		// grab date & time
 		if ((tok = strsep(&s,",")) == NULL) return false;
 		strncpy(buf, tok, 4); buf[4] = '\0';		// YYYYmmddhhmmss.ccc
 		GPSdata.year = atoi(buf);
