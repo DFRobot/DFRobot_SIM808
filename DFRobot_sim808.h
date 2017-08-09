@@ -43,6 +43,17 @@ enum Protocol {
     UDP    = 2,
 };
 
+/* Type of SMS to isSMS function
+ *
+ */
+enum typeSMS {
+	REC_UNREAD,
+	REC_READ,
+	STO_UNSENT,
+	STO_SENT,
+	ALL
+};
+
 class DFRobot_SIM808
 {
 public:
@@ -97,16 +108,25 @@ public:
      *      false on success
      *      true on error
      */
-    bool sendSMS(char* number, char* data);
-
+    bool sendSMS(const char* number, const char* data);
+    bool sendSMS(const char* number, const __FlashStringHelper* data);
+	
+	
     /** Check if there is any UNREAD SMS: this function DOESN'T change the UNREAD status of the SMS
      *  @returns
      *      1..20 on success, position/index where SMS is stored, suitable for the function ReadSMS
      *      -1 on error
      *       0 - there is no SMS with specified status (UNREAD)
      */
+    char isSMSunread();
 
-	char isSMSunread();
+    /** Check if there is any SMS present of the specified type, default to ALL
+     *  @returns
+     *      1..20 on success, position/index where SMS is stored, suitable for the function ReadSMS
+     *      -1 on error
+     *       0 - there is no SMS with specified status (UNREAD)
+     */
+    char isSMS(typeSMS type = ALL);
     
     /** read SMS, phone and date if getting a SMS message. It changes SMS status to READ 
      *  @param  messageIndex  SIM position to read
@@ -326,6 +346,11 @@ public:
 	//Open or Close GPS
 	bool  attachGPS();
 	bool  detachGPS();
+
+	//function to stop and start dataflow
+	bool startGpsDataflow();	
+	bool stopGpsDataflow();
+	
 	
      // Parse a (potentially negative) number with up to 2 decimal digits -xxxx.yy
 	 
@@ -340,14 +365,16 @@ public:
 	
 	//get GPS signal
 	bool  getGPS(); 
+
+	// get gps information
+	bool getInfGPS();
 	
-	
-	 SoftwareSerial *gprsSerial;
-	 HardwareSerial *hgprsSerial;
+	SoftwareSerial *gprsSerial;
+	HardwareSerial *hgprsSerial;
 	Stream *sgprsSerial;
 	
 public:
-	struct gspdata{
+	struct gpsdata {
 		uint16_t year;
 		uint8_t month;
 		uint8_t day;
@@ -360,7 +387,9 @@ public:
 		float speed_kph;
 		float heading;
 		float altitude;
-	}GPSdata;
+		uint8_t satelites_view;
+		uint8_t satelites_use;
+	} GPSdata;
 
 private:
 	byte serialFlag;
