@@ -30,7 +30,7 @@
  
 
 #include <stdio.h>
-#include <arduino.h> 
+#include <Arduino.h> 		// in my linux system, names are case sensitive
 #include "DFRobot_sim808.h"
 
 extern Stream *serialSIM808;
@@ -143,7 +143,7 @@ bool DFRobot_SIM808::sendSMS(const char *number, const char *data)
     //sprintf(cmd,"AT+CMGS=\"%s\"\r\n", number);
 	//snprintf(cmd, sizeof(cmd),"AT+CMGS=\"%s\"\r\n", number);
 //    if(!sim808_check_with_cmd(cmd,">",CMD)) {
-    if(!sim808_check_with_cmd("\"\r\n",">",CMD)) {
+    if(!sim808_check_with_cmd(F("\"\r\n"),">",CMD)) {
         return false;
     }
     delay(1000);
@@ -166,7 +166,7 @@ bool DFRobot_SIM808::sendSMS(const char *number, const __FlashStringHelper* data
     //sprintf(cmd,"AT+CMGS=\"%s\"\r\n", number);
 	//snprintf(cmd, sizeof(cmd),"AT+CMGS=\"%s\"\r\n", number);
 //    if(!sim808_check_with_cmd(cmd,">",CMD)) {
-    if(!sim808_check_with_cmd("\"\r\n",">",CMD)) {
+    if(!sim808_check_with_cmd(F("\"\r\n"),">",CMD)) {
         return false;
     }
     delay(1000);
@@ -227,6 +227,92 @@ char DFRobot_SIM808::isSMSunread()
         //sim808_flush_serial();
         //We have to call command again
         sim808_send_cmd( F("AT+CMGL=\"REC UNREAD\", 1\r\n" ) );
+        sim808_clean_buffer(gprsBuffer,48); 
+        sim808_read_buffer(gprsBuffer,47,DEFAULT_TIMEOUT);
+		//Serial.print("Buffer isSMSunread 2: ");Serial.println(gprsBuffer);       
+        if(NULL != ( s = strstr(gprsBuffer,"+CMGL:"))) {
+            //There is at least one UNREAD SMS, get index/position
+            s = strstr(gprsBuffer,":");
+            if (s != NULL) {
+                //We are going to flush serial data until OK is recieved
+                sim808_wait_for_resp("OK\r\n", CMD);
+                return atoi(s+1);
+            }
+        } else {
+            return -1; 
+
+        }
+    } 
+    return -1;
+}
+
+char DFRobot_SIM808::isSMS(typeSMS type)
+{
+    char gprsBuffer[48];  //48 is enough to see +CMGL:
+    char *s;
+    
+	 sim808_check_with_cmd(F("AT+CMGF=1\r\n"),"OK\r\n",CMD);
+    delay(1000);
+
+    //List of all UNREAD SMS and DON'T change the SMS UNREAD STATUS
+    sim808_send_cmd(F("AT+CMGL=\""));
+    switch (type) {
+	case REC_UNREAD: sim808_send_cmd(F("REC UNREAD")); break;
+	case REC_READ: sim808_send_cmd(F("REC READ")); break;
+	case STO_UNSENT: sim808_send_cmd(F("STO UNSENT")); break;
+	case STO_SENT: sim808_send_cmd(F("STO SENT")); break;
+	case ALL: sim808_send_cmd(F("ALL"));
+    };
+    sim808_send_cmd(F("\",1\r\n"));
+    /*If you want to change SMS status to READ you will need to send:
+          AT+CMGL=\"REC UNREAD\"\r\n
+      This command will list all UNREAD SMS and change all of them to READ
+      
+     If there is not SMS, response is (30 chars)
+         AT+CMGL="REC UNREAD",1  --> 22 + 2
+                                 --> 2
+         OK                      --> 2 + 2
+
+     If there is SMS, response is like (>64 chars)
+         AT+CMGL="REC UNREAD",1
+         +CMGL: 9,"REC UNREAD","XXXXXXXXX","","14/10/16,21:40:08+08"
+         Here SMS text.
+         OK  
+         
+         or
+
+         AT+CMGL="REC UNREAD",1
+         +CMGL: 9,"REC UNREAD","XXXXXXXXX","","14/10/16,21:40:08+08"
+         Here SMS text.
+         +CMGL: 10,"REC UNREAD","YYYYYYYYY","","14/10/16,21:40:08+08"
+         Here second SMS        
+         OK           
+    */
+
+    sim808_clean_buffer(gprsBuffer,31); 
+    sim808_read_buffer(gprsBuffer,30,DEFAULT_TIMEOUT); 
+    //Serial.print("Buffer isSMSunread: ");Serial.println(gprsBuffer);
+
+    if(NULL != ( s = strstr(gprsBuffer,"OK"))) {
+        //In 30 bytes "doesn't" fit whole +CMGL: response, if recieve only "OK"
+        //    means you don't have any UNREAD SMS
+        delay(50);
+        return 0;
+    } else {
+        //More buffer to read
+        //We are going to flush serial data until OK is recieved
+        sim808_wait_for_resp("OK\r\n", CMD);        
+        //sim808_flush_serial();
+        //We have to call command again
+	    sim808_send_cmd(F("AT+CMGL=\""));
+	    switch (type) {
+		case REC_UNREAD: sim808_send_cmd(F("REC UNREAD")); break;
+		case REC_READ: sim808_send_cmd(F("REC READ")); break;
+		case STO_UNSENT: sim808_send_cmd(F("STO UNSENT")); break;
+		case STO_SENT: sim808_send_cmd(F("STO SENT")); break;
+		case ALL: sim808_send_cmd(F("ALL"));
+	    };
+	    sim808_send_cmd(F("\",1\r\n"));
         sim808_clean_buffer(gprsBuffer,48); 
         sim808_read_buffer(gprsBuffer,47,DEFAULT_TIMEOUT);
 		//Serial.print("Buffer isSMSunread 2: ");Serial.println(gprsBuffer);       
@@ -325,7 +411,7 @@ bool DFRobot_SIM808::readSMS(int messageIndex, char *message,int length)
 	sim808_send_cmd( F("AT+CMGR="));
 	itoa(messageIndex, num, 10);
 	sim808_send_cmd(num);
-	sim808_send_cmd("\r\n");
+	sim808_send_cmd(F("\r\n"));
 //  sprintf(cmd,"AT+CMGR=%d\r\n",messageIndex);
 //    sim808_send_cmd(cmd);
     sim808_clean_buffer(gprsBuffer,sizeof(gprsBuffer));
@@ -356,7 +442,7 @@ bool DFRobot_SIM808::deleteSMS(int index)
     //return 0;
     // We have to wait OK response
 	//return sim808_check_with_cmd(cmd,"OK\r\n",CMD);
-	return sim808_check_with_cmd("\r","OK\r\n",CMD);	
+	return sim808_check_with_cmd(F("\r"),"OK\r\n",CMD);	
 }
 
 bool DFRobot_SIM808::callUp(char *number)
@@ -371,7 +457,7 @@ bool DFRobot_SIM808::callUp(char *number)
     //sim808_send_cmd(cmd);
 	sim808_send_cmd( F("ATD") );
 	sim808_send_cmd(number);
-	sim808_send_cmd(";\r\n");
+	sim808_send_cmd(F(";\r\n"));
     return true;
 }
 
@@ -576,25 +662,27 @@ bool DFRobot_SIM808::sendUSSDSynchronous(char *ussdCommand, char *resultcode, ch
 	//
 	//+CUSD:1,"{response}",{int}
 
-	byte i = 0;
+    byte i = 0;
     char gprsBuffer[200];
     char *p,*s;
-    sim808_clean_buffer(response, sizeof(response));
+    // nonsense, sizeof(response) is not the size of the buffer!
+    //sim808_clean_buffer(response, sizeof(response));
 	
-	sim808_flush_serial();
+    sim808_flush_serial();
     sim808_send_cmd( F("AT+CUSD=1,\"") );
     sim808_send_cmd(ussdCommand);
-    sim808_send_cmd("\"\r");
-	if(!sim808_wait_for_resp("OK\r\n", CMD))
+    sim808_send_cmd(F("\"\r"));
+    delay(500);			// I had beter results with this delay (caladeira) 
+    if(!sim808_wait_for_resp("OK\r\n", CMD))
 		return false;
     sim808_clean_buffer(gprsBuffer,200);
     sim808_read_buffer(gprsBuffer,200,DEFAULT_TIMEOUT);
     if(NULL != ( s = strstr(gprsBuffer,"+CUSD: "))) {
         *resultcode = *(s+7);
-		resultcode[1] = '\0';
-		if(!('0' <= *resultcode && *resultcode <= '2'))
-			return false;
-		s = strstr(s,"\"");
+	resultcode[1] = '\0';
+	if(!('0' <= *resultcode && *resultcode <= '2'))
+		return false;
+	s = strstr(s,"\"");
         s = s + 1;  //We are in the first phone number character
         p = strstr(s,"\""); //p is last character """
         if (NULL != s) {
@@ -604,9 +692,9 @@ bool DFRobot_SIM808::sendUSSDSynchronous(char *ussdCommand, char *resultcode, ch
             }
             response[i] = '\0';            
         }
-		return true;
-	}
-	return false;
+	return true;
+    }
+    return false;
 }
 
 bool DFRobot_SIM808::cancelUSSDSession(void)
@@ -630,15 +718,15 @@ bool DFRobot_SIM808::join(const __FlashStringHelper *apn, const __FlashStringHel
     if (apn) {
       sim808_send_cmd(apn);
     }
-    sim808_send_cmd("\",\"");
+    sim808_send_cmd(F("\",\""));
     if (userName) {
       sim808_send_cmd(userName);
     }
-    sim808_send_cmd("\",\"");
+    sim808_send_cmd(F("\",\""));
     if (passWord) {
       sim808_send_cmd(passWord);
     }
-    sim808_check_with_cmd("\"\r\n", "OK\r\n", CMD);
+    sim808_check_with_cmd(F("\"\r\n"), "OK\r\n", CMD);
     
 
     //Brings up wireless connection
@@ -690,18 +778,18 @@ bool DFRobot_SIM808::connect(Protocol ptl,const char * host, int port, int timeo
     if(ptl == TCP) {
 		sim808_send_cmd( F("AT+CIPSTART=\"TCP\",\"") );
 		sim808_send_cmd(host);
-		sim808_send_cmd("\",");
+		sim808_send_cmd(F("\","));
 		itoa(port, num, 10);
 		sim808_send_cmd(num);
-		sim808_send_cmd("\r\n");
+		sim808_send_cmd(F("\r\n"));
 //        sprintf(cmd, "AT+CIPSTART=\"TCP\",\"%s\",%d\r\n",host, port);
     } else if(ptl == UDP) {
 		sim808_send_cmd( F("AT+CIPSTART=\"UDP\",\""));
 		sim808_send_cmd(host);
-		sim808_send_cmd("\",");
+		sim808_send_cmd(F("\","));
 		itoa(port, num, 10);
 		sim808_send_cmd(num);
-		sim808_send_cmd("\r\n");
+		sim808_send_cmd(F("\r\n"));
 
 	//        sprintf(cmd, "AT+CIPSTART=\"UDP\",\"%s\",%d\r\n",host, port);
     } else {
@@ -794,7 +882,7 @@ int DFRobot_SIM808::send(const char * str, int len)
 		sim808_send_cmd( F("AT+CIPSEND=") );
 		itoa(len, num, 10);
 		sim808_send_cmd(num);
-		if(!sim808_check_with_cmd("\r\n",">",CMD)) {
+		if(!sim808_check_with_cmd(F("\r\n"),">",CMD)) {
         //if(!sim808_check_with_cmd(cmd,">",CMD)) {
             return 0;
         }
@@ -890,7 +978,7 @@ bool DFRobot_SIM808::getLocation(const __FlashStringHelper *apn, float *longitud
 	if (apn) {
       sim808_send_cmd(apn);
     }
-    sim808_check_with_cmd("\"\r","OK\r\n",CMD);
+    sim808_check_with_cmd(F("\"\r"),"OK\r\n",CMD);
 	//send AT+SAPBR =1,1
 	sim808_check_with_cmd( F("AT+SAPBR=1,1\r"),"OK\r\n",CMD);
 	
@@ -927,9 +1015,11 @@ bool DFRobot_SIM808::attachGPS()
 	 if(!sim808_check_with_cmd( F("AT+CGNSPWR=1\r\n"), "OK\r\n", CMD)) { 
         return false;
     }
+    /*
 	 if(!sim808_check_with_cmd( F("AT+CGNSTST=1\r\n"), "OK\r\n", CMD)) { 
         return false;
     }
+    */
 	return true;
 }
 
@@ -1167,5 +1257,112 @@ bool DFRobot_SIM808::getGPS()
 	//}
 	return true;
 }
+
+
+/*
+	Parse GPS data after command AT+CGNSINF
+	GPS data flow must be stoped for this to work correctlly: stopGpsDataflow()
+	This way, gps function can be used simultaneously with other chip functions
+	unlike getGPS() that needs gps data flow to be on
+	
+== without FIX ==
+AT+CGNSINF
++CGNSINF: 1,0,20170729175800.000,,,,0.52,180.4,0,,,,,,12,3,,,34,,
+
+== with FIX ==
+AT+CGNSINF
++CGNSINF: 1,1,20170729175803.000,38.707528,-9.136422,129.400,1.02,75.1,1,,1.3,1.6,0.9,,12,5,,,41,,
+
+*/
+
+bool DFRobot_SIM808::getInfGPS()
+{
+	char gprsBuffer[120];
+	char buf[5];
+	char *s, *tok;
+
+	sim808_flush_serial();
+	sim808_send_cmd(F("AT+CGNSINF\r"));
+	sim808_clean_buffer(gprsBuffer, 120);
+	sim808_read_buffer(gprsBuffer, 120, DEFAULT_TIMEOUT);
+	if (NULL != (s = strstr(gprsBuffer, "+CGNSINF:"))) {
+		s += 10;
+
+		// skip gps status
+		if (strsep(&s,",") == NULL) return false;
+
+		// check fix
+		if ((tok = strsep(&s,",")) == NULL) return false;
+		if (atoi(tok) != 1) return false;	// valid data only after fix
+
+		// grab date & time
+		if ((tok = strsep(&s,",")) == NULL) return false;
+		strncpy(buf, tok, 4); buf[4] = '\0';		// YYYYmmddhhmmss.ccc
+		GPSdata.year = atoi(buf);
+		strncpy(buf, tok+4, 2); buf[2] = '\0';		// yyyyMMddhhmmss.ccc
+		GPSdata.month = atoi(buf);
+		strncpy(buf, tok+6, 2); buf[2] = '\0';		// yyyymmDDhhmmss.ccc
+		GPSdata.day = atoi(buf);
+		strncpy(buf, tok+8, 2); buf[2] = '\0';		// yyyymmddHHmmss.ccc
+		GPSdata.hour = atoi(buf);
+		strncpy(buf, tok+10, 2); buf[2] = '\0';		// yyyymmddhhMMss.ccc
+		GPSdata.minute = atoi(buf);
+		strncpy(buf, tok+12, 2); buf[2] = '\0';		// yyyymmddhhmmSS.ccc
+		GPSdata.second = atoi(buf);
+		strncpy(buf, tok+15, 3); buf[3] = '\0';		// yyyymmddhhmmss.CCC
+		GPSdata.centisecond = atoi(buf);
+
+		// grab the latitude
+		if ((tok = strsep(&s,",")) == NULL) return false;
+		GPSdata.lat = atof(tok);
+
+		// grab longitude
+		if ((tok = strsep(&s,",")) == NULL) return false;
+		GPSdata.lon = atof(tok);
+
+		// skip MSL Altitude
+		if ((tok = strsep(&s,",")) == NULL) return false;
+		GPSdata.altitude = atof(tok) * 1.852;
+
+		// grab the speed in knots
+		if ((tok = strsep(&s,",")) == NULL) return false;
+		GPSdata.speed_kph = atof(tok) * 1.852;
+
+		// grab the heading
+		if ((tok = strsep(&s,",")) == NULL) return false;
+		GPSdata.heading = atof(tok);
+
+		// skip fix mode
+		if (strsep(&s,",") == NULL) return false;
+
+		// skip recerved1
+		if (strsep(&s,",") == NULL) return false;
+
+		// skip hdop
+		if (strsep(&s,",") == NULL) return false;
+
+		// skip pdop
+		if (strsep(&s,",") == NULL) return false;
+
+		// skip vdop
+		if (strsep(&s,",") == NULL) return false;
+
+		// skip reserved2
+		if (strsep(&s,",") == NULL) return false;
+
+		// get gps satelites in view
+		if ((tok = strsep(&s,",")) == NULL) return false;
+		GPSdata.satelites_view = atoi(tok);
+
+		// grab gnss satelites used
+		if ((tok = strsep(&s,",")) == NULL) return false;
+		GPSdata.satelites_use = atoi(tok);
+
+		// no need to continue
+		return true;
+	}
+	return false;
+}
+
 
 
