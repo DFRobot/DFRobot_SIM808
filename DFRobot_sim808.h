@@ -332,7 +332,8 @@ public:
 	void getTime(uint32_t time);
 	void getDate(uint32_t data);  
 	int32_t parseDecimal(const char *term);   
-	
+    void latitudeConverToDMS();
+    void LongitudeConverToDMS();
 	
 	//parser Serial data
 	bool  parseGPRMC(char *gpsbuffer);
@@ -361,6 +362,12 @@ public:
 		float heading;
 		float altitude;
 	}GPSdata;
+
+    struct DMSData{
+        int degrees;
+        int minutes;
+        float seconeds;
+    }latDMS,longDMS;
 
 private:
 	byte serialFlag;

@@ -59,19 +59,19 @@ DFRobot_SIM808::DFRobot_SIM808(SoftwareSerial *mySerial)
 
 bool DFRobot_SIM808::init(void)
 {
-    //¼ì²éATÖ¸ÁîÊÇ·ñÓĞĞ§
+    //é–¿ç†¸æ»é·çƒ½æ•“ç»±çª½é¸å›¬æ•“é‚ã‚†å«¹é–¿ç†»î—é‘ã‚†å«¹é–¿ç†¸æ»é·é”‹æ™¥
 	if(!sim808_check_with_cmd("AT\r\n","OK\r\n",CMD)){   
 	    
 		return false;
 		
     }
-	//¼ì²éSIMÊÇ·ñ¿ÉÒÔ´òµç»°£¬·¢¶ÌĞÅ
+	//é–¿ç†¸æ»é·çƒ½æ•“ç»²å¥Mé–¿ç†»î—é‘ã‚†å«¹é–¿ç†¸æ»é·é”‹ç°®é–¿ç†ºæ™«ç’‡æ¿‹æ•“é‚ã‚†å«¹é–¿ç†¸æ»é·çƒ½æ•“é‚ã‚†å«¹é–¿ç†¸æ»é·ï¿½
 	// 1 : OK
     if(!sim808_check_with_cmd("AT+CFUN=1\r\n","OK\r\n",CMD)){
         return false;
     }
 
-	//¼ì²éSIM¿¨×´Ì¬
+	//é–¿ç†¸æ»é·çƒ½æ•“ç»²å¥Mé–¿ç†¸æ»é·é£å§¸é¬ï¿½
     if(!checkSIMStatus()) {
 		return false;
     }
@@ -113,7 +113,7 @@ bool DFRobot_SIM808::checkSIMStatus(void)
     while(count < 3) {
         sim808_send_cmd("AT+CPIN?\r\n");
         sim808_read_buffer(gprsBuffer,32,DEFAULT_TIMEOUT);
-        if((NULL != strstr(gprsBuffer,"+CPIN: READY"))) {  //±íÊ¾SIM×´Ì¬Õı³£
+        if((NULL != strstr(gprsBuffer,"+CPIN: READY"))) {  //é–¿ç†¸æ»é·é£ãšSIMé˜èˆµâ‚¬ä¾€æ•“é‚ã‚†å«¹é–¿ç†¸æ»é·ï¿½
             break;
         }
         count++;
@@ -421,7 +421,7 @@ bool DFRobot_SIM808::isCallActive(char *number)
 
     sim808_clean_buffer(gprsBuffer,29);
     sim808_read_buffer(gprsBuffer,27);
-    //HACERR cuando haga lo de esperar a OK no me harÃ­a falta esto
+    //HACERR cuando haga lo de esperar a OK no me haré–¾å“¸ falta esto
     //We are going to flush serial data until OK is recieved
     sim808_wait_for_resp("OK\r\n", CMD);    
     //Serial.print("Buffer isCallActive 1: ");Serial.println(gprsBuffer);
@@ -788,7 +788,7 @@ int DFRobot_SIM808::send(const char * str, int len)
 int DFRobot_SIM808::recv(char* buf, int len)
 {
     sim808_clean_buffer(buf,len);
-    sim808_read_buffer(buf,len);   //Ya he llamado a la funcion con la longitud del buffer - 1 y luego le estoy aÃ±adiendo el 0
+    sim808_read_buffer(buf,len);   //Ya he llamado a la funcion con la longitud del buffer - 1 y luego le estoy aç”¯çµ˜diendo el 0
     return strlen(buf);
 }
 
@@ -919,7 +919,7 @@ bool DFRobot_SIM808::getGPRMC()
 	static bool endflag  = false;
 	static char count;
 		
-	while(serialSIM808->available())   //´®¿ÚÓĞÊı¾İ
+	while(serialSIM808->available())   //é–¿ç†¸æ»é·çƒ½æ•“é‚ã‚†å«¹é–¿ç†¸æ»é·çƒ½æ•“é‚ã‚†å«¹é–¿ç†¸æ»é·ï¿½
 	{	c = serialSIM808->read();
 		if(endflag)
 		{
@@ -962,14 +962,14 @@ bool DFRobot_SIM808::getGPRMC()
 
 bool DFRobot_SIM808::parseGPRMC(char *gpsbuffer)
 {
-	if(strstr(gpsbuffer,des) == NULL)  //²»ÊÇ$GPRMC×Ö·û´®¿ªÍ·µÄGPSĞÅÏ¢
+	if(strstr(gpsbuffer,des) == NULL)  //é–¿ç†¸æ»é·çƒ½æ•“é‚ã‚†å«¹$GPRMCé–¿ç†»î”œé‘ã‚†å«¹é–¿ç†¸æ»é·çƒ½æ•“é‚ã‚†å«¹æ¾¶æ’®æ•“é‚ã‚†å«¹GPSé–¿ç†¸æ»é·é”‹ä¼…
 	{
 		receivedStackIndex = 0;
 		return false;
 	}
 	else
 	{		
-		if(gpsbuffer[18] == 'A')        //ÅĞ¶ÏÊı¾İÊÇ·ñÓĞĞ§
+		if(gpsbuffer[18] == 'A')        //é–¿ç†·å½¨ç’è§„å«¹é–¿ç†¸æ»é·çƒ½æ•“é‚ã‚†å«¹é–¿ç†»î—é‘ã‚†å«¹é–¿ç†¸æ»é·é”‹æ™¥
 			return true;
 		else
 		{
@@ -1016,17 +1016,17 @@ int32_t DFRobot_SIM808::parseDecimal(const char *term)
  
 bool DFRobot_SIM808::getGPS() 
 {
-	 if(!getGPRMC())  //Ã»ÓĞµÃµ½$GPRMC×Ö·û´®¿ªÍ·µÄGPSĞÅÏ¢
+	 if(!getGPRMC())    //æ²¡æœ‰å¾—åˆ°$GPRMCå­—ç¬¦ä¸²å¼€å¤´çš„GPSä¿¡æ¯
 		 return false;
 	// Serial.println(receivedStack);
-	 if(!parseGPRMC(receivedStack))  //²»ÊÇ$GPRMC×Ö·û´®¿ªÍ·µÄGPSĞÅÏ¢
+	 if(!parseGPRMC(receivedStack))  //ä¸æ˜¯$GPRMCå­—ç¬¦ä¸²å¼€å¤´çš„GPSä¿¡æ¯
 		 return false;  
-		 		
+		
 	// skip mode
-    char *tok = strtok(receivedStack, ",");     //ÆğÊ¼Òıµ¼·û 
+    char *tok = strtok(receivedStack, ",");     //èµ·å§‹å¼•å¯¼ç¬¦
     if (! tok) return false;
 
-   // grab time                                  //<1> UTCÊ±¼ä£¬¸ñÊ½Îªhhmmss.sss£»
+   // grab time                                  //<1> UTCæ—¶é—´ï¼Œæ ¼å¼ä¸ºhhmmss.sssï¼›
    // tok = strtok(NULL, ",");
 	char *time = strtok(NULL, ",");
     if (! time) return false;
@@ -1034,54 +1034,34 @@ bool DFRobot_SIM808::getGPS()
 	getTime(newTime);
 
     // skip fix
-    tok = strtok(NULL, ",");              //<2> ¶¨Î»×´Ì¬£¬A=ÓĞĞ§¶¨Î»£¬V=ÎŞĞ§¶¨Î»
+    tok = strtok(NULL, ",");              //<2> å®šä½çŠ¶æ€ï¼ŒA=æœ‰æ•ˆå®šä½ï¼ŒV=æ— æ•ˆå®šä½
     if (! tok) return false;
 
     // grab the latitude
-    char *latp = strtok(NULL, ",");   //<3> Î³¶Èddmm.mmmm(¶È·Ö)¸ñÊ½(Ç°ÃæµÄ0Ò²½«±»´«Êä)
+    char *latp = strtok(NULL, ",");       //<3> çº¬åº¦ddmm.mmmm(åº¦åˆ†)æ ¼å¼(å‰é¢çš„0ä¹Ÿå°†è¢«ä¼ è¾“)
     if (! latp) return false;
 
-    // grab latitude direction              // <4> Î³¶È°ëÇòN(±±°ëÇò)»òS(ÄÏ°ëÇò)
+    // grab latitude direction              // <4> çº¬åº¦åŠçƒN(åŒ—åŠçƒ)æˆ–S(å—åŠçƒ)
     char *latdir = strtok(NULL, ",");
     if (! latdir) return false;
 
-    // grab longitude                          //<5> ¾­¶Èdddmm.mmmm(¶È·Ö)¸ñÊ½(Ç°ÃæµÄ0Ò²½«±»´«Êä)
+    // grab longitude                       //<5> ç»åº¦dddmm.mmmm(åº¦åˆ†)æ ¼å¼(å‰é¢çš„0ä¹Ÿå°†è¢«ä¼ è¾“)
     char *longp = strtok(NULL, ",");
     if (! longp) return false;
 
-    // grab longitude direction            //<6> ¾­¶È°ëÇòE(¶«¾­)»òW(Î÷¾­)
+    // grab longitude direction            //<6> ç»åº¦åŠçƒE(ä¸œç»)æˆ–W(è¥¿ç»)
     char *longdir = strtok(NULL, ",");
     if (! longdir) return false;
 
     float latitude = atof(latp);
     float longitude = atof(longp);
 
-    // convert latitude from minutes to decimal
-    float degrees = latitude / 100;
-    float minutes = latitude - (100 * degrees);
-    minutes /= 60;
-    degrees += minutes;
+	GPSdata.lat = latitude/100;
 
-    // turn direction into + or -
-    if (latdir[0] == 'S') degrees *= -1;
+    // convert longitude from minutes to decimal  
+	GPSdata.lon= longitude/100;
 
-    //*lat = degrees;
-	GPSdata.lat = degrees;
-
-    // convert longitude from minutes to decimal  //<3> Î³¶Èddmm.mmmm(¶È·Ö)¸ñÊ½(Ç°ÃæµÄ0Ò²½«±»´«Êä)
-    degrees = longitude / 100;
-    minutes = longitude - (100 * degrees);
-    minutes /= 60;
-    degrees += minutes;
-	
-
-    // turn direction into + or -
-    if (longdir[0] == 'W') degrees *= -1;
-
-    //*lon = degrees;
-	GPSdata.lon= degrees;
-
-    // only grab speed if needed                  //<7> µØÃæËÙÂÊ(000.0~999.9½Ú£¬Ç°ÃæµÄ0Ò²½«±»´«Êä)
+    // only grab speed if needed                  //<7> åœ°é¢é€Ÿç‡(000.0~999.9èŠ‚ï¼Œå‰é¢çš„0ä¹Ÿå°†è¢«ä¼ è¾“)
    // if (speed_kph != NULL) {
 
       // grab the speed in knots
@@ -1094,7 +1074,7 @@ bool DFRobot_SIM808::getGPS()
 
    // }
 
-    // only grab heading if needed              //µØÃæº½Ïò(000.0~359.9¶È£¬ÒÔÕæ±±Îª²Î¿¼»ù×¼£¬Ç°ÃæµÄ0Ò²½«±»´«Êä)
+    // only grab heading if needed             
    // if (heading != NULL) {
 
       // grab the speed in knots
@@ -1105,7 +1085,7 @@ bool DFRobot_SIM808::getGPS()
 		GPSdata.heading = atof(coursep);
    // }
 	
-	 // grab date
+	// grab date
 	char *date = strtok(NULL, ",");   
     if (! date) return false;
 	uint32_t newDate = atol(date);
@@ -1118,4 +1098,21 @@ bool DFRobot_SIM808::getGPS()
 	return true;
 }
 
+void DFRobot_SIM808::latitudeConverToDMS()
+{
+    float temp;
+    latDMS.degrees = (int)GPSdata.lat; 
+    temp = (GPSdata.lat - latDMS.degrees)*60;
+    latDMS.minutes = (int)temp;
+    latDMS.seconeds = (temp - latDMS.minutes)*60;
+}
+
+void DFRobot_SIM808::LongitudeConverToDMS()
+{
+    float temp;
+    longDMS.degrees = (int)GPSdata.lon; 
+    temp = (GPSdata.lon - longDMS.degrees)*60;
+    longDMS.minutes = (int)temp;
+    longDMS.seconeds = (temp - longDMS.minutes)*60;
+}
 

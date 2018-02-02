@@ -54,15 +54,33 @@ void loop() {
     Serial.print(sim808.GPSdata.second);
     Serial.print(":");
     Serial.println(sim808.GPSdata.centisecond);
+    
     Serial.print("latitude :");
     Serial.println(sim808.GPSdata.lat,6);
+    
+    sim808.latitudeConverToDMS();
+    Serial.print("latitude :");
+    Serial.print(sim808.latDMS.degrees);
+    Serial.print("\^");
+    Serial.print(sim808.latDMS.minutes);
+    Serial.print("\'");
+    Serial.print(sim808.latDMS.seconeds,6);
+    Serial.println("\"");
     Serial.print("longitude :");
     Serial.println(sim808.GPSdata.lon,6);
+    sim808.LongitudeConverToDMS();
+    Serial.print("longitude :");
+    Serial.print(sim808.longDMS.degrees);
+    Serial.print("\^");
+    Serial.print(sim808.longDMS.minutes);
+    Serial.print("\'");
+    Serial.print(sim808.longDMS.seconeds,6);
+    Serial.println("\"");
+    
     Serial.print("speed_kph :");
     Serial.println(sim808.GPSdata.speed_kph);
     Serial.print("heading :");
     Serial.println(sim808.GPSdata.heading);
-    Serial.println();
 
     //************* Turn off the GPS power ************
     sim808.detachGPS();
