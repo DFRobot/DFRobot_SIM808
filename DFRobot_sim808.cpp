@@ -1021,7 +1021,7 @@ bool DFRobot_SIM808::getGPS()
 	// Serial.println(receivedStack);
 	 if(!parseGPRMC(receivedStack))  //不是$GPRMC字符串开头的GPS信息
 		 return false;  
-		
+		 		
 	// skip mode
     char *tok = strtok(receivedStack, ",");     //起始引导符 
     if (! tok) return false;
@@ -1053,12 +1053,12 @@ bool DFRobot_SIM808::getGPS()
     char *longdir = strtok(NULL, ",");
     if (! longdir) return false;
 
-    double latitude = atof(latp);
-    double longitude = atof(longp);
+    float latitude = atof(latp);
+    float longitude = atof(longp);
 
     // convert latitude from minutes to decimal
-    float degrees = floor(latitude / 100);
-    double minutes = latitude - (100 * degrees);
+    float degrees = latitude / 100;
+    float minutes = latitude - (100 * degrees);
     minutes /= 60;
     degrees += minutes;
 
@@ -1068,8 +1068,8 @@ bool DFRobot_SIM808::getGPS()
     //*lat = degrees;
 	GPSdata.lat = degrees;
 
-    // convert longitude from minutes to decimal
-    degrees = floor(longitude / 100);
+    // convert longitude from minutes to decimal  //<3> 纬度ddmm.mmmm(度分)格式(前面的0也将被传输)
+    degrees = longitude / 100;
     minutes = longitude - (100 * degrees);
     minutes /= 60;
     degrees += minutes;
@@ -1106,7 +1106,7 @@ bool DFRobot_SIM808::getGPS()
    // }
 	
 	 // grab date
-	char *date = strtok(NULL, ",");   //<3> 纬度ddmm.mmmm(度分)格式(前面的0也将被传输)
+	char *date = strtok(NULL, ",");   
     if (! date) return false;
 	uint32_t newDate = atol(date);
 	getDate(newDate);
