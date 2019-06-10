@@ -64,10 +64,11 @@ public:
      *  @return true if connected, false otherwise
      */
 
-    bool init(void);
+    bool init(boolean simcheck = true);
 
    
     /** check if DFRobot_SIM808 module is powered on or not
+     *  @param  simcheck checks if SIM is OK, (GPS works without SIM)
      *  @returns
      *      true on success
      *      false on error
@@ -326,7 +327,10 @@ public:
 	//Open or Close GPS
 	bool  attachGPS();
 	bool  detachGPS();
-	
+	bool  getGPS();
+
+    // set GPS test node
+    bool setTestGPS(bool test);
      // Parse a (potentially negative) number with up to 2 decimal digits -xxxx.yy
 	 
 	void getTime(uint32_t time);
@@ -340,7 +344,7 @@ public:
 	bool  getGPRMC();
 	
 	//get GPS signal
-	bool  getGPS(); 
+	bool  getGPSTestData(); 
 	
 	
 	 SoftwareSerial *gprsSerial;
@@ -361,20 +365,34 @@ public:
 		float speed_kph;
 		float heading;
 		float altitude;
-	}GPSdata;
+	} GPSdata;
+
+    struct gspstatus {
+        uint8_t status;
+        uint8_t sat_in_view;
+        uint8_t sat_used;
+        uint8_t sat_glonass;
+        //<HDOP>,<PDOP>, <VDOP>
+        float horizontal_pres;
+        float position_pres;
+        float vertical_pres;
+    } GPSStatus;
 
     struct DMSData{
         int degrees;
         int minutes;
-        float seconeds;
+        float seconds;
     }latDMS,longDMS;
+    char cgnsinf[128];
 
 private:
+
 	byte serialFlag;
     bool checkSIMStatus(void);
     uint32_t str_to_ip(const char* str);
     static DFRobot_SIM808* inst;
     uint32_t _ip;
     char ip_string[16]; //XXX.YYY.ZZZ.WWW + \0
+    char *strtok_new(char * string, char const * delimiter);
 };
 #endif

@@ -57,7 +57,7 @@ DFRobot_SIM808::DFRobot_SIM808(SoftwareSerial *mySerial)
    sim808_init(mySerial, 0);
 }
 
-bool DFRobot_SIM808::init(void)
+bool DFRobot_SIM808::init(boolean simcheck)
 {
     //閿熸枻鎷烽敓绱窽鎸囬敓鏂ゆ嫹閿熻鍑ゆ嫹閿熸枻鎷锋晥
 	if(!sim808_check_with_cmd("AT\r\n","OK\r\n",CMD)){   
@@ -72,7 +72,7 @@ bool DFRobot_SIM808::init(void)
     }
 
 	//閿熸枻鎷烽敓绲奍M閿熸枻鎷风姸鎬�
-    if(!checkSIMStatus()) {
+    if(simcheck && !checkSIMStatus()) {
 		return false;
     }
     return true;
@@ -894,14 +894,26 @@ bool DFRobot_SIM808::getLocation(const __FlashStringHelper *apn, float *longitud
 	return false;
 }
 
+bool  DFRobot_SIM808::setTestGPS(bool test) {
+    
+    if (test) {
+        if(!sim808_check_with_cmd("AT+CGNSTST=1\r\n", "OK\r\n", CMD)) { 
+            return false;
+        }
+    } else {
+        if(!sim808_check_with_cmd("AT+CGNSTST=0\r\n", "OK\r\n", CMD)) { 
+            return false;
+        }  
+    }
+    return true;
+}
+
 bool DFRobot_SIM808::attachGPS()
 {
 	 if(!sim808_check_with_cmd("AT+CGNSPWR=1\r\n", "OK\r\n", CMD)) { 
         return false;
     }
-	 if(!sim808_check_with_cmd("AT+CGNSTST=1\r\n", "OK\r\n", CMD)) { 
-        return false;
-    }
+
 	return true;
 }
 
@@ -1012,9 +1024,122 @@ int32_t DFRobot_SIM808::parseDecimal(const char *term)
 	 GPSdata.month  = (date / 100) % 100;
 	 GPSdata.day = date / 10000;
  }
+
+char *DFRobot_SIM808::strtok_new(char * string, char const * delimiter){
+   static char *source = NULL;
+   char *p, *riturn = 0;
+   if(string != NULL)         source = string;
+   if(source == NULL)         return NULL;
+
+   if((p = strpbrk (source, delimiter)) != NULL) {
+      *p  = 0;
+      riturn = source;
+      source = ++p;
+   }
+return riturn;
+}
+
+bool DFRobot_SIM808::getGPS() {
+
+
+    // +CGNSINF: <GNSS run status>,<Fix status>, <UTC date & Time>,<Latitude>,<Longitude>,
+    //  <MSL Altitude>,<Speed Over Ground>, <Course Over Ground>, <Fix Mode>,<Reserved1>,
+    // <HDOP>,<PDOP>, <VDOP>,<Reserved2>,<GNSS Satellites in View>, <GNSS Satellites Used>,
+    // <GLONASS Satellites Used>,<Reserved3>,<C/N0 max>,<HPA>,<VPA>
+    char temp[sizeof(cgnsinf)];
+
+    sim808_send_cmd("AT+CGNSINF\r\n");
+    sim808_read_buffer(temp, sizeof(cgnsinf)-1);
+    temp[sizeof(temp)-1] = '\0';
+
+    strncpy(cgnsinf, temp, sizeof(temp));
+
+    char *tok;
+
+    if((tok=strstr(temp,"+CGNSINF:")) == NULL)
+    return false; // not expected response
+
+    strncpy(cgnsinf, tok, sizeof(temp));
+
+    tok = strtok_new(tok, ",");    
+    if (! tok) return false;
+
+    char *status = strtok_new(NULL, ",");    
+    if (! status) return false;
+    
+    
+
+    char *datetime =  strtok_new(NULL, ",");    
+    if (! datetime) return false;
+    char date[5];
+    memset(date,0,strlen(date));
+    strncpy(date, datetime, 4);
+    GPSdata. year =  atoi(date);	
+    memset(date,0,strlen(date));
+    strncpy(date, datetime+4, 2);
+	GPSdata.month =  atoi(date);	 
+    memset(date,0,strlen(date));
+    strncpy(date, datetime+6, 2);
+    GPSdata.day =  atoi(date);	 
+
+	uint32_t newTime = (uint32_t)parseDecimal(datetime + 8);
+	getTime(newTime);
+
+    char *lat =  strtok_new(NULL, ",");    
+    if (! lat) return false;
+    GPSdata.lat = atof(lat);
+
+    char *lon =  strtok_new(NULL, ",");    
+    if (! lon) return false;
+    GPSdata.lon = atof(lon);
+
+    char *alt =  strtok_new(NULL, ",");    
+    if (! alt) return false;
+    GPSdata.altitude = atof(alt);
+
+    char *speed =  strtok_new(NULL, ",");    
+    if (! speed) return false;
+    GPSdata.speed_kph = atof(speed)* 1.852;
+
+    char *heading =  strtok_new(NULL, ",");    
+    if (! heading) return false;
+    GPSdata.heading = atof(heading);
+
+    // skip
+    strtok_new(NULL, ",");   strtok_new(NULL, ",");   
+    
+    char *hdop =  strtok_new(NULL, ",");
+    if (! hdop) return false;
+    GPSStatus.horizontal_pres = atof(hdop);
+
+    char *pdop =  strtok_new(NULL, ",");
+    if (! pdop) return false;
+    GPSStatus.position_pres = atof(pdop);
+    
+    char *vdop =  strtok_new(NULL, ",");
+    if (! vdop) return false;
+    GPSStatus.vertical_pres = atof(vdop);
+
+    // skip
+    strtok_new(NULL, ",");
+
+    char *sat_in_view =  strtok_new(NULL, ",");
+    if (! sat_in_view) return false;
+    GPSStatus.sat_in_view = atoi(sat_in_view);
+     
+    char *sat_used =  strtok_new(NULL, ",");
+    if (! sat_used) return false;
+    GPSStatus.sat_used = atoi(sat_used);
+     
+    char *sat_glonass =  strtok_new(NULL, ",");
+    if (! sat_glonass) return false;
+    GPSStatus.sat_glonass = atof(sat_glonass);
+   
+   
+    return true;
+} 
  
- 
-bool DFRobot_SIM808::getGPS() 
+bool DFRobot_SIM808::getGPSTestData() 
 {
 	 if(!getGPRMC())    //没有得到$GPRMC字符串开头的GPS信息
 		 return false;
@@ -1056,10 +1181,10 @@ bool DFRobot_SIM808::getGPS()
     float latitude = atof(latp);
     float longitude = atof(longp);
 
-	GPSdata.lat = latitude/100;
+	GPSdata.lat = latitude;
 
     // convert longitude from minutes to decimal  
-	GPSdata.lon= longitude/100;
+	GPSdata.lon= longitude;
 
     // only grab speed if needed                  //<7> 地面速率(000.0~999.9节，前面的0也将被传输)
    // if (speed_kph != NULL) {
@@ -1104,7 +1229,10 @@ void DFRobot_SIM808::latitudeConverToDMS()
     latDMS.degrees = (int)GPSdata.lat; 
     temp = (GPSdata.lat - latDMS.degrees)*60;
     latDMS.minutes = (int)temp;
-    latDMS.seconeds = (temp - latDMS.minutes)*60;
+    latDMS.seconds = (temp - latDMS.minutes)*60;
+    if (latDMS.minutes < 0) latDMS.minutes = -latDMS.minutes;
+    if (latDMS.seconds < 0) latDMS.seconds = -latDMS.seconds;
+
 }
 
 void DFRobot_SIM808::LongitudeConverToDMS()
@@ -1113,6 +1241,8 @@ void DFRobot_SIM808::LongitudeConverToDMS()
     longDMS.degrees = (int)GPSdata.lon; 
     temp = (GPSdata.lon - longDMS.degrees)*60;
     longDMS.minutes = (int)temp;
-    longDMS.seconeds = (temp - longDMS.minutes)*60;
+    longDMS.seconds = (temp - longDMS.minutes)*60;
+    if (longDMS.minutes < 0) longDMS.minutes = -longDMS.minutes;
+    if (longDMS.seconds < 0) longDMS.seconds = -longDMS.seconds;
 }
 
