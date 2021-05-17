@@ -1056,10 +1056,26 @@ bool DFRobot_SIM808::getGPS()
     float latitude = atof(latp);
     float longitude = atof(longp);
 
-	GPSdata.lat = latitude/100;
+int a, b;
+float lat, lon;
+float latitude = atof(latp);
+float longitude = atof(longp);
 
-    // convert longitude from minutes to decimal  
-	GPSdata.lon= longitude/100;
+// convert latitude from minutes to decimal 
+a = latitude / 100;
+lat = ((latitude / 100) - a) * 100;
+lat /= 60;
+lat += a;
+if(*latdir == 'S') lat *= -1;
+GPSdata.lat = lat;
+
+// convert longitude from minutes to decimal  
+b = longitude / 100;
+lon = ((longitude / 100) - b) * 100;
+lon /= 60;
+lon += b;
+if(*longdir == 'W') lon *= -1;
+GPSdata.lon= lon;
 
     // only grab speed if needed                  //<7> 地面速率(000.0~999.9节，前面的0也将被传输)
    // if (speed_kph != NULL) {
