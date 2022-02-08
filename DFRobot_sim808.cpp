@@ -1,36 +1,19 @@
 /*!
- * @file DFRobot_sim808.cpp
- * @A library  for DFRobot's SIM808 GPS/DFRobot_SIM808/GSM Shield
- *
- * @copyright	[DFRobot](http://www.dfrobot.com), 2016
- *
- * @author [Jason](jason.ling@dfrobot.com)
+ * @file  DFRobot_SIM808.cpp
+ * @brief  Define infrastructure of DFRobot_SIM808 class
+ * @details  A library  for DFRobot's SIM808 GPS/DFRobot_SIM808/GSM Shield
+ * @copyright  Copyright (c) 2010 DFRobot Co.Ltd (http://www.dfrobot.com)
+ * @license  The MIT License (MIT)
+ * @author  [Jason](jason.ling@dfrobot.com)
+ * @maintainer  [qsjhyy](yihuan.huang@dfrobot.com)
  * @version  V1.0
- * @date  2016-09-23
- 
- * The MIT License (MIT)
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
+ * @date  2022-02-07
+ * @url  https://github.com/DFRobot/DFRobot_SIM808
  */
- 
+
 
 #include <stdio.h>
-#include "DFRobot_sim808.h"
+#include "DFRobot_SIM808.h"
 
 extern Stream *serialSIM808;
 
@@ -59,19 +42,16 @@ DFRobot_SIM808::DFRobot_SIM808(SoftwareSerial *mySerial)
 
 bool DFRobot_SIM808::init(void)
 {
-    //閿熸枻鎷烽敓绱窽鎸囬敓鏂ゆ嫹閿熻鍑ゆ嫹閿熸枻鎷锋晥
 	if(!sim808_check_with_cmd("AT\r\n","OK\r\n",CMD)){   
 	    
 		return false;
 		
     }
-	//閿熸枻鎷烽敓绲奍M閿熻鍑ゆ嫹閿熸枻鎷锋簮閿熺晫璇濋敓鏂ゆ嫹閿熸枻鎷烽敓鏂ゆ嫹閿熸枻鎷�
 	// 1 : OK
     if(!sim808_check_with_cmd("AT+CFUN=1\r\n","OK\r\n",CMD)){
         return false;
     }
 
-	//閿熸枻鎷烽敓绲奍M閿熸枻鎷风姸鎬�
     if(!checkSIMStatus()) {
 		return false;
     }
@@ -113,7 +93,7 @@ bool DFRobot_SIM808::checkSIMStatus(void)
     while(count < 3) {
         sim808_send_cmd("AT+CPIN?\r\n");
         sim808_read_buffer(gprsBuffer,32,DEFAULT_TIMEOUT);
-        if((NULL != strstr(gprsBuffer,"+CPIN: READY"))) {  //閿熸枻鎷风ずSIM鐘舵€侀敓鏂ゆ嫹閿熸枻鎷�
+        if((NULL != strstr(gprsBuffer,"+CPIN: READY"))) {
             break;
         }
         count++;
@@ -421,7 +401,6 @@ bool DFRobot_SIM808::isCallActive(char *number)
 
     sim808_clean_buffer(gprsBuffer,29);
     sim808_read_buffer(gprsBuffer,27);
-    //HACERR cuando haga lo de esperar a OK no me har閾哸 falta esto
     //We are going to flush serial data until OK is recieved
     sim808_wait_for_resp("OK\r\n", CMD);    
     //Serial.print("Buffer isCallActive 1: ");Serial.println(gprsBuffer);
@@ -788,7 +767,7 @@ int DFRobot_SIM808::send(const char * str, int len)
 int DFRobot_SIM808::recv(char* buf, int len)
 {
     sim808_clean_buffer(buf,len);
-    sim808_read_buffer(buf,len);   //Ya he llamado a la funcion con la longitud del buffer - 1 y luego le estoy a甯絘diendo el 0
+    sim808_read_buffer(buf,len);   //Ya he llamado a la funcion con la longitud del buffer - 1 y luego le estoy a diendo el 0
     return strlen(buf);
 }
 
@@ -849,7 +828,7 @@ unsigned long DFRobot_SIM808::getIPnumber()
 */
 
 bool DFRobot_SIM808::getLocation(const __FlashStringHelper *apn, float *longitude, float *latitude)
-{    	
+{
 	int i = 0;
     char gprsBuffer[80];
 	char buffer[20];
@@ -869,7 +848,7 @@ bool DFRobot_SIM808::getLocation(const __FlashStringHelper *apn, float *longitud
 	//AT+CIPGSMLOC=1,1
 	sim808_flush_serial();
 	sim808_send_cmd("AT+CIPGSMLOC=1,1\r");
-	sim808_clean_buffer(gprsBuffer,sizeof(gprsBuffer));	
+	sim808_clean_buffer(gprsBuffer,sizeof(gprsBuffer));
 	sim808_read_buffer(gprsBuffer,sizeof(gprsBuffer),2*DEFAULT_TIMEOUT,6*DEFAULT_INTERCHAR_TIMEOUT);
 	//Serial.println(gprsBuffer);
     
@@ -888,7 +867,7 @@ bool DFRobot_SIM808::getLocation(const __FlashStringHelper *apn, float *longitud
 		while(*(++s) !=  ',')
 			buffer[i++]=*s;
 		buffer[i] = 0;
-		*latitude = atof(buffer);            
+		*latitude = atof(buffer);
 		return true;
 	}
 	return false;
@@ -896,10 +875,10 @@ bool DFRobot_SIM808::getLocation(const __FlashStringHelper *apn, float *longitud
 
 bool DFRobot_SIM808::attachGPS()
 {
-	 if(!sim808_check_with_cmd("AT+CGNSPWR=1\r\n", "OK\r\n", CMD)) { 
+	 if(!sim808_check_with_cmd("AT+CGNSPWR=1\r\n", "OK\r\n", CMD)) {
         return false;
     }
-	 if(!sim808_check_with_cmd("AT+CGNSTST=1\r\n", "OK\r\n", CMD)) { 
+	 if(!sim808_check_with_cmd("AT+CGNSTST=1\r\n", "OK\r\n", CMD)) {
         return false;
     }
 	return true;
@@ -907,7 +886,7 @@ bool DFRobot_SIM808::attachGPS()
 
 bool DFRobot_SIM808::detachGPS()
 {
-	 if(!sim808_check_with_cmd("AT+CGNSPWR=0\r\n", "OK\r\n", CMD)) { 
+	 if(!sim808_check_with_cmd("AT+CGNSPWR=0\r\n", "OK\r\n", CMD)) {
         return false;
     }
 	return true;
@@ -919,7 +898,7 @@ bool DFRobot_SIM808::getGPRMC()
 	static bool endflag  = false;
 	static char count;
 		
-	while(serialSIM808->available())   //閿熸枻鎷烽敓鏂ゆ嫹閿熸枻鎷烽敓鏂ゆ嫹閿熸枻鎷�
+	while(serialSIM808->available())
 	{	c = serialSIM808->read();
 		if(endflag)
 		{
@@ -931,21 +910,21 @@ bool DFRobot_SIM808::getGPRMC()
 				endflag = false;
 				receivedStack[receivedStackIndex] = '\0';
 				return true;
-			}			
+			}
 		}
 		else
-		{	
+		{
 			switch(c)
 			{
-					
-				case '$':									
+
+				case '$':
 					receivedStackIndex = 0;
-					receivedStack[receivedStackIndex++] = c;								
+					receivedStack[receivedStackIndex++] = c;
 					break;
 				case '*':
 					endflag = true;
 					count = 2;
-					receivedStack[receivedStackIndex++] = c;									
+					receivedStack[receivedStackIndex++] = c;
 					break;
 				default:
 					if(receivedStackIndex < 120)
@@ -962,14 +941,14 @@ bool DFRobot_SIM808::getGPRMC()
 
 bool DFRobot_SIM808::parseGPRMC(char *gpsbuffer)
 {
-	if(strstr(gpsbuffer,des) == NULL)  //閿熸枻鎷烽敓鏂ゆ嫹$GPRMC閿熻鍑ゆ嫹閿熸枻鎷烽敓鏂ゆ嫹澶撮敓鏂ゆ嫹GPS閿熸枻鎷锋伅
+	if(strstr(gpsbuffer,des) == NULL)
 	{
 		receivedStackIndex = 0;
 		return false;
 	}
 	else
 	{		
-		if(gpsbuffer[18] == 'A')        //閿熷彨璁规嫹閿熸枻鎷烽敓鏂ゆ嫹閿熻鍑ゆ嫹閿熸枻鎷锋晥
+		if(gpsbuffer[18] == 'A')
 			return true;
 		else
 		{
@@ -1005,15 +984,13 @@ int32_t DFRobot_SIM808::parseDecimal(const char *term)
 	 GPSdata.centisecond =  time % 100;
  }
 
- 
   void DFRobot_SIM808::getDate(uint32_t date){
 	 uint16_t year = date % 100;
 	 GPSdata. year    =  year + 2000;	 
 	 GPSdata.month  = (date / 100) % 100;
 	 GPSdata.day = date / 10000;
  }
- 
- 
+
 bool DFRobot_SIM808::getGPS() 
 {
 	 if(!getGPRMC())    //没有得到$GPRMC字符串开头的GPS信息
@@ -1056,10 +1033,10 @@ bool DFRobot_SIM808::getGPS()
     float latitude = atof(latp);
     float longitude = atof(longp);
 
-	GPSdata.lat = latitude/100;
+	GPSdata.lat = (int)(latitude / 100) + (latitude - (int)(latitude / 100) * 100) / 60;
 
-    // convert longitude from minutes to decimal  
-	GPSdata.lon= longitude/100;
+    // convert longitude from minutes to decimal
+	GPSdata.lon = (int)(longitude / 100) + (longitude - (int)(longitude / 100) * 100) / 60;
 
     // only grab speed if needed                  //<7> 地面速率(000.0~999.9节，前面的0也将被传输)
    // if (speed_kph != NULL) {
@@ -1074,7 +1051,7 @@ bool DFRobot_SIM808::getGPS()
 
    // }
 
-    // only grab heading if needed             
+    // only grab heading if needed
    // if (heading != NULL) {
 
       // grab the speed in knots
@@ -1086,7 +1063,7 @@ bool DFRobot_SIM808::getGPS()
    // }
 	
 	// grab date
-	char *date = strtok(NULL, ",");   
+	char *date = strtok(NULL, ",");
     if (! date) return false;
 	uint32_t newDate = atol(date);
 	getDate(newDate);
@@ -1101,7 +1078,7 @@ bool DFRobot_SIM808::getGPS()
 void DFRobot_SIM808::latitudeConverToDMS()
 {
     float temp;
-    latDMS.degrees = (int)GPSdata.lat; 
+    latDMS.degrees = (int)GPSdata.lat;
     temp = (GPSdata.lat - latDMS.degrees)*60;
     latDMS.minutes = (int)temp;
     latDMS.seconeds = (temp - latDMS.minutes)*60;
@@ -1110,7 +1087,7 @@ void DFRobot_SIM808::latitudeConverToDMS()
 void DFRobot_SIM808::LongitudeConverToDMS()
 {
     float temp;
-    longDMS.degrees = (int)GPSdata.lon; 
+    longDMS.degrees = (int)GPSdata.lon;
     temp = (GPSdata.lon - longDMS.degrees)*60;
     longDMS.minutes = (int)temp;
     longDMS.seconeds = (temp - longDMS.minutes)*60;

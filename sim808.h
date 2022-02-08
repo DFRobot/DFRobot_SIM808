@@ -28,15 +28,26 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-
+/*!
+ * @file  DFRobot_SIM808.h
+ * @brief  Define infrastructure of DFRobot_SIM808 class
+ * @details  Header file for DFRobot's SIM808 GPS/DFRobot_SIM808/GSM Shield.
+ * @copyright  Copyright (c) 2010 DFRobot Co.Ltd (http://www.dfrobot.com)
+ * @license  The MIT License (MIT)
+ * @author  [Jason](jason.ling@dfrobot.com)
+ * @maintainer  [qsjhyy](yihuan.huang@dfrobot.com)
+ * @version  V1.0
+ * @date  2022-1-18
+ * @url  https://github.com/DFRobot/DFRobot_SIM808
+ */
 #ifndef __SIM808_H__
 #define __SIM808_H__
 
 #include <Arduino.h>
 #include <SoftwareSerial.h>
 
-#define DEFAULT_TIMEOUT     		 5   //seconds
-#define DEFAULT_INTERCHAR_TIMEOUT 1500   //miliseconds
+#define DEFAULT_TIMEOUT      5   //seconds
+#define DEFAULT_INTERCHAR_TIMEOUT   1500   //miliseconds
 
 enum DataType {
     CMD     = 0,

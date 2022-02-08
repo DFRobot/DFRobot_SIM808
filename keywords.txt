@@ -1,0 +1,58 @@
+#######################################
+# Syntax Coloring Map For DFRobot_ENS160
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+DFRobot_ENS160	KEYWORD1
+DFRobot_ENS160_I2C	KEYWORD1
+DFRobot_ENS160_SPI	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+begin	KEYWORD2
+setPWRMode	KEYWORD2
+setINTMode	KEYWORD2
+setTempAndHum	KEYWORD2
+getENS160Status	KEYWORD2
+getAQI	KEYWORD2
+getTVOC	KEYWORD2
+getECO2	KEYWORD2
+getMISR	KEYWORD2
+calcMISR	KEYWORD2
+
+#######################################
+# Instances (KEYWORD3)
+#######################################
+
+mode	KEYWORD3
+csPin	KEYWORD3
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+
+ENS160_COMMAND_NOP	LITERAL1
+ENS160_COMMAND_GET_APPVER	LITERAL1
+ENS160_COMMAND_CLRGPR	LITERAL1
+ENS160_SLEEP_MODE	LITERAL1
+ENS160_IDLE_MODE	LITERAL1
+ENS160_STANDARD_MODE	LITERAL1
+NO_ERR	LITERAL1
+ERR_DATA_BUS	LITERAL1
+ERR_IC_VERSION	LITERAL1
+eINTPinActiveLow	LITERAL1
+eINTPinActiveHigh	LITERAL1
+eINTPinOD	LITERAL1
+eINTPinPP	LITERAL1
+eINTModeDIS	LITERAL1
+eINTModeEN	LITERAL1
+validityFlag	LITERAL1
+eNormalOperation	LITERAL1
+eWarmUpPhase	LITERAL1
+eInitialStartUpPhase	LITERAL1
+eInvalidOutput	LITERAL1
