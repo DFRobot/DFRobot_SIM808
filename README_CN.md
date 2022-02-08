@@ -1,19 +1,14 @@
-# DFRobot_ENS160
+# DFRobot_SIM808
 * [English Version](./README.md)
 
-ENS160是一款数字多气体传感器解决方案, 基于金属氧化物(MOX)技术, 带有四个MOX传感器元件。
-每个传感器元件都有独立的热板控制, 以检测各种气体, 如挥发性有机化合物(VOCs), 包括乙醇, 甲苯, 以及氢和二氧化氮, 具有优越的选择性和准确性。
-对于室内空气质量应用, ENS160支持智能算法, 数字化处理芯片上的原始传感器测量。
-这些算法计算二氧化碳当量, TVOC, 空气质量指数(AQIs), 湿度和温度补偿, 以及基线管理-全部在芯片上!
-此外, 一个开发选项可用于从每个传感器元件数字输出原始传感器测量值, 以进行定制。
-LGA封装设备包括一个SPI或I²C从接口与单独的VDDIO与主主机处理器通信。
-ENS160是一种经过验证和免维护的技术, 专为高容量和可靠性而设计。
+SIM808 GPS/GPRS/GSM 是一款集成了四频段GSM/GPRS和GPS导航技术的Arduino扩展板。尺寸仅与一块信用卡相当，符合标准Arduino管脚分装，兼容Arduino UNO、 Leonardo、Mega等主控器。 SIM808相比上一代的SIM908在性能和稳定性上做了一定提升，除了正常的短信和电话功能外，还支持彩信、DTMF、FTP等功能。可以实现数据采集，无线数据收发等物联网应用。板载麦克风和耳机接口，节约了用户的使用成本，更加简单和方便，还可以通过外接天线接口直连GSM和GPS天线。 SIM808 GPS/GPRS/GSM Shield V1.0采用Simcom最新版SIM808模块，与市面上现有的SIM808模块相比，新版的模块具有更好的稳定性。
 
-![产品实物图](./resources/images/ENS160.png)
+![产品实物图](./resources/images/SIM808.png)
 
 
-## 产品链接 (https://www.dfrobot.com.cn/)
-    SKU：SEN0514/SEN0515
+## 产品链接 (https://www.dfrobot.com.cn/goods-1278.html)
+    SKU: TEL0097
+
 
 ## 目录
 
@@ -27,13 +22,10 @@ ENS160是一种经过验证和免维护的技术, 专为高容量和可靠性而
 
 ## 概述
 
-* TrueVOC™空气质量检测, 具有行业领先的纯度和稳定性, 提供多种输出, 如eCO21, TVOC和aqis2, 符合全球iaq3信号标准
-* 独立传感器加热器控制最高选择性(如乙醇, 甲苯, 丙酮, NO2)和突出的背景辨别能力
-* 对硅氧烷和湿度的免疫力
-* 无麻烦的片上加热器驱动器控制和数据处理-不需要外部库-没有主板cpu性能影响
-* 低功耗应用程序中断阈值
-* 工作范围广:温度:-40至+85°C;湿度:5 ~ 95%5;VDD: 1.71 to 1.98V;VDDIO 1.71至3.6V
-* 该库支持SPI/I2C通信。
+* 发送和接收GPRS数据(TCP/IP, HTTP等)
+* 接收GPS数据和A-GPS数据
+* 发送和接收短信
+* 打电话和接电话
 
 
 ## 库安装
@@ -45,80 +37,404 @@ ENS160是一种经过验证和免维护的技术, 专为高容量和可靠性而
 
 ```C++
 
-  /**
-   * @fn begin
-   * @brief 初始化函数
-   * @return int类型, 表示返回初始化的状态
-   * @retval 0 NO_ERROR
-   * @retval -1 ERR_DATA_BUS
-   * @retval -2 ERR_IC_VERSION
-   */
-  virtual int begin(void);
+    /**
+     * @fn DFRobot_SIM808
+     * @brief Constructor
+     * @param mySerial  serial ports for communication, supporting hard and soft serial ports
+     * @n Tx, rx, and baudRate can also be passed in this order
+     * @return None
+     */
+    DFRobot_SIM808(SoftwareSerial *mySerial);
+    DFRobot_SIM808(HardwareSerial *mySerial);
+    DFRobot_SIM808(uint8_t tx, uint8_t rx, uint32_t baudRate = 9600);
 
-  /**
-   * @fn setPWRMode
-   * @brief 设置电源模式
-   * @param mode 可配置的电源模式:
-   * @n       ENS160_SLEEP_MODE: 深度睡眠模式(低功耗待机)
-   * @n       ENS160_IDLE_MODE: 空闲模式(低功耗)
-   * @n       ENS160_STANDARD_MODE: 标准气体传感模式
-   * @return None
-   */
-  void setPWRMode(uint8_t mode);
+    /**
+     * @fn getInstance
+     * @brief get instance of DFRobot_SIM808 class
+     * @return instance of DFRobot_SIM808 class
+     */
+    static DFRobot_SIM808* getInstance() { return inst; };
 
-  /**
-   * @fn setINTMode
-   * @brief 中断配置(INT)
-   * @param mode 需要设置的中断模式,下列模式经过或运算后得到mode:
-   * @n       中断设置(有新数据时产生中断): eINTModeDIS-禁用中断, eINTModeEN-启用中断
-   * @n       中断引脚输出驱动模式: eINTPinOD-开漏输出, eINTPinPP-推挽输出
-   * @n       中断引脚有效电平: eINTPinActiveLow-低电平有效, eINTPinActiveHigh-高电平有效
-   * @return None
-   */
-  void setINTMode(uint8_t mode);
+    /**
+     * @fn init
+     * @brief initialize DFRobot_SIM808 module including SIM card check & signal strength
+     * @return true if connected, false otherwise
+     */
+    bool init(void);
 
-  /**
-   * @fn setTempAndHum
-   * @brief 用户将环境温度和相对湿度写入ENS160, 用于气体测量数据的校准补偿。
-   * @param ambientTemp 用于补偿的当前环境温度, float类型, 单位: C
-   * @param relativeHumidity 用于补偿的当前环境温度, float类型, 单位: %rH
-   * @return None
-   */
-  void setTempAndHum(float ambientTemp, float relativeHumidity);
+    /**
+     * @fn checkPowerUp
+     * @brief check if DFRobot_SIM808 module is powered on or not
+     * @return true on success, false on error
+     */
+    bool checkPowerUp(void);
 
-  /**
-   * @fn getENS160Status
-   * @brief 这个API获取传感器的运行状态信息
-   * @return 运行状态:
-   * @n        eNormalOperation: Normal operation; 
-   * @n        eWarmUpPhase: Warm-Up phase; 
-   * @n        eInitialStartUpPhase: Initial Start-Up phase; 
-   * @n        eInvalidOutput: Invalid output
-   */
-  uint8_t getENS160Status(void);
+    /**
+     * @fn powerUpDown
+     * @brief power Up DFRobot_SIM808 module (JP has to be soldered)
+     * @param pin  pin 9 connected to JP jumper so we can power up and down through software
+     * @return None
+     */
+    void powerUpDown(uint8_t pin);
 
-  /**
-   * @fn getAQI
-   * @brief 获取根据UBA计算出的空气质量指数
-   * @return 返回值范围为: 1-5(对应优秀, 良好, 中等, 贫困, 不健康这五个等级)
-   */
-  uint8_t getAQI(void);
+    /**
+     * @fn powerReset
+     * @brief power reset for SIM800 board
+     * @param pin  (preconfigurated as OUTPUT)
+     * @return None
+     */
+    void powerReset(uint8_t pin);
 
-  /**
-   * @fn getTVOC
-   * @brief 获取总挥发性有机化合物(TVOC)的浓度
-   * @return 返回值范围为: 0–65000, 单位: ppb
-   */
-  uint16_t getTVOC(void);
+    /**
+     * @fn sendSMS
+     * @brief send text SMS
+     * @param number  phone number which SMS will be send to
+     * @param data  message that will be send to
+     * @return true on success, false on error
+     */
+    bool sendSMS(char* number, char* data);
 
-  /**
-   * @fn getECO2
-   * @brief 获取根据检测到的VOCs和氢报告计算出的二氧化碳当量浓度(eCO2 – Equivalent CO2)
-   * @return 返回值范围为: 400–65000, 单位: ppm
-   * @note 分为五个等级: Excellent(400 - 600), Good(600 - 800), Moderate(800 - 1000), 
-   * @n                  Poor(1000 - 1500), Unhealthy(> 1500)
-   */
-  uint16_t getECO2(void);
+    /**
+     * @fn isSMSunread
+     * @brief Check if there is any UNREAD SMS: this function DOESN'T change the UNREAD status of the SMS
+     * @return returned value
+     * @retval 1~20 - on success, position/index where SMS is stored, suitable for the function ReadSMS
+     * @retval -1 - on error
+     * @retval 0 - there is no SMS with specified status (UNREAD)
+     */
+    char isSMSunread(void);
+
+    /**
+     * @fn readSMS
+     * @brief read SMS, phone and date if getting a SMS message. It changes SMS status to READ
+     * @param messageIndex  SIM position to read
+     * @param message  buffer used to get SMS message
+     * @param length  length of message buffer
+     * @param phone  buffer used to get SMS's sender phone number
+     * @param datetime  buffer used to get SMS's send datetime
+     * @return true on success, false on error
+     */
+    bool readSMS(int messageIndex, char *message, int length, char *phone, char *datetime); 
+
+    /**
+     * @fn readSMS
+     * @brief read SMS if getting a SMS message
+     * @param buffer  buffer that get from DFRobot_SIM808 module(when getting a SMS, DFRobot_SIM808 module will return a buffer array)
+     * @param message  buffer used to get SMS message
+     * @param check  whether to check phone number(we may only want to read SMS from specified phone number)
+     * @return true on success, false on error
+     */
+    bool readSMS(int messageIndex, char *message, int length);
+
+    /**
+     * @fn deleteSMS
+     * @brief delete SMS message on SIM card
+     * @param index  the index number which SMS message will be delete
+     * @return true on success, false on error
+     */
+    bool deleteSMS(int index);
+
+    /**
+     * @fn callUp
+     * @brief call someone
+     * @param number  the phone number which you want to call
+     * @return true on success, false on error
+     */
+    bool callUp(char* number);
+
+    /**
+     * @fn answer
+     * @brief auto answer if coming a call
+     * @return None
+     */
+    void answer(void);
+
+    /**
+     * @fn hangup
+     * @brief hang up if coming a call
+     * @return true on success, false on error
+     */
+    bool hangup(void);
+
+    /**
+     * @fn disableCLIPring
+     * @brief Disable +CLIP notification when an incoming call is active, RING text is always shown. See isCallActive function
+     * @note This is done in order no to overload serial outputCheck if there is a call active and get the phone number in that case
+     * @return true on success, false on error
+     */
+    bool disableCLIPring(void);
+
+    /**
+     * @fn getSubscriberNumber
+     * @brief Get Subscriber Number (your number) using AT+CNUM command, but if nothing return, then
+     * @n     you need to command this to your SIM900. (See AT+CPBS, AT+CPBW)
+     * @n     AT+CPBS="ON"
+     * @n     AT+CPBW=1,"+{Your Number}",145
+     * @n     AT+CPBS="SM"
+     * @param number  your phone number
+     * @return true on success, false on error
+     */
+    bool getSubscriberNumber(char *number);
+
+    /**
+     * @fn isCallActive
+     * @brief Check if there is a call active and get the phone number in that case
+     * @param number  Check if there is a call active and get the phone number in that case
+     * @return true on success, false on error
+     */
+    bool isCallActive(char *number);
+
+    /**
+     * @fn getDateTime
+     * @brief get DateTime from SIM900 (see AT command: AT+CLTS=1) as string
+     * @param buffer  DateTime from SIM900
+     * @return true on success, false on error
+     * @note If it doesn't work may be for two reasons:
+     * @n    1. Your carrier doesn't give that information
+     * @n    2. You have to configurate the SIM900 IC.
+     * @n    - First with SIM900_Serial_Debug example try this AT command: AT+CLTS?
+     * @n    - If response is 0, then it is disabled.
+     * @n    - Enable it by: AT+CLTS=1
+     * @n    - Now you have to save this config to EEPROM memory of SIM900 IC by: AT&W
+     * @n    - Now, you have to power down and power up again the SIM900 
+     * @n    - Try now again: AT+CCLK?
+     * @n    - It should work now
+     * 
+     */
+    bool getDateTime(char *buffer);
+
+    /**
+     * @fn getSignalStrength
+     * @brief get Signal Strength from SIM900 (see AT command: AT+CSQ) as integer
+     * @param buffer  Signal Strength
+     * @return true on success, false on error
+     */
+    bool getSignalStrength(int *buffer);
+
+    /**
+     * @fn sendUSSDSynchronous
+     * @brief Send USSD Command Synchronously (Blocking call until unsolicited response is received)
+     * @param ussdCommand  command UUSD, ex: *123#
+     * @param resultCode  char Result Code, see AT+CUSD command
+     * @param response  string response
+     * @return true on success, false on error
+     */  
+    bool sendUSSDSynchronous(char *ussdCommand, char *resultcode, char *response);
+
+    /**
+     * @fn cancelUSSDSession
+     * @brief Cancel USSD Session
+     * @return true on success cancel active session, false on error or because no active session
+     */
+    bool cancelUSSDSession(void);
+
+/*************************** DFRobot_SIM808 ***************************/
+
+    /**
+     * @fn join
+     * @brief Connect the DFRobot_SIM808 module to the network.
+     * @param apn  APN(Access Point Name)
+     * @param userName  user name
+     * @param passWord  pass word
+     * @return true if connected, false otherwise
+     */
+    bool join(const __FlashStringHelper *apn = 0, const __FlashStringHelper *userName = 0, const __FlashStringHelper *passWord = 0);
+
+    /**
+     * @fn disconnect
+     * @brief Disconnect the DFRobot_SIM808 module from the network
+     * @return None
+     */
+    void disconnect(void);
+
+    /**
+     * @fn connect
+     * @brief Open a tcp/udp connection with the specified host on the specified port
+     * @param ptl protocol for socket, TCP/UDP can be choosen
+     * @param host host (can be either an ip address or a name. If a name is provided, a dns request will be established)
+     * @param port port
+     * @param timeout wait seconds till connected
+     * @param chartimeout wait milliseconds between characters from DFRobot_SIM808 module
+     * @return true if successful, false if error
+     */
+    bool connect(Protocol ptl, const char * host, int port, int timeout = 2 * DEFAULT_TIMEOUT, int chartimeout = 2 * DEFAULT_INTERCHAR_TIMEOUT);
+    bool connect(Protocol ptl, const __FlashStringHelper *host, const __FlashStringHelper *port, int timeout = 2 * DEFAULT_TIMEOUT, int chartimeout = 2 * DEFAULT_INTERCHAR_TIMEOUT);
+
+    /**
+     * @fn is_connected
+     * @brief Check if a tcp link is active
+     * @return true if successful, false if error
+     */
+    bool is_connected(void);
+
+    /**
+     * @fn close
+     * @brief Close a tcp connection
+     * @return true if successful, false if error
+     */
+    bool close(void);
+
+    /**
+     * @fn readable
+     * @brief check if DFRobot_SIM808 module is readable or not
+     * @return true if readable
+     */
+    int readable(void);
+
+    /**
+     * @fn wait_readable
+     * @brief wait a few time to check if DFRobot_SIM808 module is readable or not
+     * @param wait_time time of waiting
+     * @return Returns the length of readable data
+     */
+    int wait_readable(int wait_time);
+
+    /**
+     * @fn wait_writeable
+     * @brief wait a few time to check if DFRobot_SIM808 module is writeable or not
+     * @param req_size time of waiting
+     * @return req_size + 1
+     */
+    int wait_writeable(int req_size);
+
+    /**
+     * @fn send
+     * @brief send data to socket
+     * @param str string to be sent
+     * @param len string length
+     * @return return bytes that actually been send
+     */
+    int send(const char * str, int len);
+
+    /**
+     * @fn recv
+     * @brief read data from socket
+     * @param buf buffer that will store the data read from socket
+     * @param len string length need to read from socket
+     * @return bytes that actually read
+     */
+    int recv(char* buf, int len);
+
+    /**
+     * @fn listen
+     * @brief Enables the selected software serial port to listen
+     * @return None
+     */
+    void listen(void);
+
+    /**
+     * @fn isListening
+     * @brief Tests to see if requested software serial port is actively listening.
+     * @return Now masking enabled, return null
+     */
+    bool isListening(void);
+
+    /**
+     * @fn gethostbyname
+     * @brief convert the host to ip
+     * @param host host ip string, ex. 10.11.12.13
+     * @param ip long int ip address, ex. 0x11223344
+     * @return true if successful
+     */
+    //NOT USED bool gethostbyname(const char* host, uint32_t* ip); 
+
+    /**
+     * @fn getIPAddress
+     * @brief get IP address
+     * @return IP address, char*
+     */
+    char* getIPAddress(void);
+
+    /**
+     * @fn getIPnumber
+     * @brief get IP number
+     * @return IP number, unsigned long
+     */
+    unsigned long getIPnumber(void);
+
+    /**
+     * @fn getLocation
+     * @brief get Location
+     * @param apn APN(Access Point Name)
+     * @param longitude longitude
+     * @param latitude latitude
+     * @return true if successful, false if error
+     */
+    bool getLocation(const __FlashStringHelper *apn, float *longitude, float *latitude);
+
+    /**
+     * @fn attachGPS
+     * @brief Open GPS
+     * @return true if successful, false if error
+     */
+    bool attachGPS(void);
+
+    /**
+     * @fn detachGPS
+     * @brief Close GPS
+     * @return true if successful, false if error
+     */
+    bool detachGPS(void);
+
+    /**
+     * @fn getTime
+     * @brief parse time
+     * @param time Time data to be parsed
+     * @return None
+     */
+    void getTime(uint32_t time);
+
+    /**
+     * @fn getDate
+     * @brief parse date
+     * @param date Date data to be parsed
+     * @return None
+     */
+    void getDate(uint32_t date);
+
+    /**
+     * @fn parseDecimal
+     * @brief Parse a (potentially negative) number with up to 2 decimal digits -xxxx.yy
+     * @param term Data to be parsed
+     * @return Parsed data
+     */
+    int32_t parseDecimal(const char *term);
+
+    /**
+     * @fn latitudeConverToDMS
+     * @brief  latitude Conver To DMS
+     * @return None
+     */
+    void latitudeConverToDMS(void);
+
+    /**
+     * @fn LongitudeConverToDMS
+     * @brief Longitude Conver To DMS
+     * @return None
+     */
+    void LongitudeConverToDMS(void);
+
+    /**
+     * @fn parseGPRMC
+     * @brief parser GPRMC, Determine whether gpsbuffer[18] is 'A'
+     * @param gpsbuffer GPS buffer data to be parsed
+     * @return true if gpsbuffer[18] is 'A'
+     */
+    bool parseGPRMC(char *gpsbuffer);
+
+    /**
+     * @fn getGPRMC
+     * @brief Get the parsed GPRMC
+     * @return true if successful, false if error
+     */
+    bool getGPRMC(void);
+
+    /**
+     * @fn getGPS
+     * @brief get GPS signal
+     * @return true if successful, false if error
+     */
+    bool getGPS(void); 
 
 ```
 
@@ -130,18 +446,14 @@ MCU                | Work Well    | Work Wrong   | Untested    | Remarks
 Arduino Uno        |      √       |              |             |
 Arduino MEGA2560   |      √       |              |             |
 Arduino Leonardo   |      √       |              |             |
-FireBeetle-ESP8266 |      √       |              |             |
-FireBeetle-ESP32   |      √       |              |             |
-FireBeetle-M0      |      √       |              |             |
-Micro:bit          |      √       |              |             |
 
 
 ## 历史
 
-- 2021/10/27 - 1.0.0 版本
+- 2022/02/08 - 1.0.0 版本
 
 
 ## 创作者
 
-Written by qsjhyy(yihuan.huang@dfrobot.com), 2021. (Welcome to our [website](https://www.dfrobot.com/))
+Written by [Jason](jason.ling@dfrobot.com), 2022. (Welcome to our [website](https://www.dfrobot.com/))
 

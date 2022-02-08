@@ -1,15 +1,19 @@
-/*
-### Get GPS data
-1. This example is used to test SIM808 GPS/GPRS/GSM Shield's reading GPS data.
-2. Open the SIM808_GetGPS example or copy these code to your project
-3. Download and dial the function switch to Arduino
-4. open serial helper
-4. Place it outside, waiting for a few minutes and then it will send GPS data to serial
-
-create on 2016/09/23, version: 1.0
-by jason
-
-*/
+/*!
+ * @file  SIM808_GetGPS.ino
+ * @brief  Get GPS data
+ * @details  1. This example is used to test SIM808 GPS/GPRS/GSM Shield's reading GPS data.
+ * @n        2. Open the SIM808_GetGPS example or copy these code to your project
+ * @n        3. Download and dial the function switch to Arduino
+ * @n        4. open serial helper
+ * @n        4. Place it outside, waiting for a few minutes and then it will send GPS data to serial
+ * @copyright  Copyright (c) 2010 DFRobot Co.Ltd (http://www.dfrobot.com)
+ * @license  The MIT License (MIT)
+ * @author  [Jason](jason.ling@dfrobot.com)
+ * @maintainer  [qsjhyy](yihuan.huang@dfrobot.com)
+ * @version  V1.0
+ * @date  2022-02-08
+ * @url  https://github.com/DFRobot/DFRobot_SIM808
+ */
 #include <DFRobot_SIM808.h>
 #include <SoftwareSerial.h>
 
@@ -61,7 +65,7 @@ void loop() {
     sim808.latitudeConverToDMS();
     Serial.print("latitude :");
     Serial.print(sim808.latDMS.degrees);
-    Serial.print("\^");
+    Serial.print("^");
     Serial.print(sim808.latDMS.minutes);
     Serial.print("\'");
     Serial.print(sim808.latDMS.seconeds,6);
@@ -71,7 +75,7 @@ void loop() {
     sim808.LongitudeConverToDMS();
     Serial.print("longitude :");
     Serial.print(sim808.longDMS.degrees);
-    Serial.print("\^");
+    Serial.print("^");
     Serial.print(sim808.longDMS.minutes);
     Serial.print("\'");
     Serial.print(sim808.longDMS.seconeds,6);

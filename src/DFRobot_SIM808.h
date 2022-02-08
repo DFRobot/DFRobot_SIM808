@@ -10,8 +10,8 @@
  * @date  2022-1-18
  * @url  https://github.com/DFRobot/DFRobot_SIM808
  */
-#ifndef __DFROBOT_SIM808_H__
-#define __DFROBOT_SIM808_H__
+#ifndef __DFRobot_SIM808_H__
+#define __DFRobot_SIM808_H__
 
 #include "sim808.h"
 

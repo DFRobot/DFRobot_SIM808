@@ -1,58 +1,75 @@
 #######################################
-# Syntax Coloring Map For DFRobot_ENS160
+# Syntax Coloring Map For DFRobot_SIM808
 #######################################
 
 #######################################
 # Datatypes (KEYWORD1)
 #######################################
 
-DFRobot_ENS160	KEYWORD1
-DFRobot_ENS160_I2C	KEYWORD1
-DFRobot_ENS160_SPI	KEYWORD1
+DFRobot_SIM808	KEYWORD1
 
 #######################################
 # Methods and Functions (KEYWORD2)
 #######################################
 
 begin	KEYWORD2
-setPWRMode	KEYWORD2
-setINTMode	KEYWORD2
-setTempAndHum	KEYWORD2
-getENS160Status	KEYWORD2
-getAQI	KEYWORD2
-getTVOC	KEYWORD2
-getECO2	KEYWORD2
-getMISR	KEYWORD2
-calcMISR	KEYWORD2
+init	KEYWORD2
+checkPowerUp	KEYWORD2
+powerUpDown	KEYWORD2
+powerReset	KEYWORD2
+sendSMS	KEYWORD2
+isSMSunread	KEYWORD2
+readSMS	KEYWORD2
+deleteSMS	KEYWORD2
+callUp	KEYWORD2
+answer	KEYWORD2
+hangup	KEYWORD2
+disableCLIPring	KEYWORD2
+getSubscriberNumber	KEYWORD2
+isCallActive	KEYWORD2
+getDateTime	KEYWORD2
+getSignalStrength	KEYWORD2
+sendUSSDSynchronous	KEYWORD2
+cancelUSSDSession	KEYWORD2
+join	KEYWORD2
+disconnect	KEYWORD2
+connect	KEYWORD2
+is_connected	KEYWORD2
+close	KEYWORD2
+readable	KEYWORD2
+wait_readable	KEYWORD2
+wait_writeable	KEYWORD2
+send	KEYWORD2
+recv	KEYWORD2
+listen	KEYWORD2
+isListening	KEYWORD2
+gethostbyname	KEYWORD2
+getIPAddress	KEYWORD2
+getIPnumber	KEYWORD2
+getLocation	KEYWORD2
+attachGPS	KEYWORD2
+detachGPS	KEYWORD2
+getTime	KEYWORD2
+getDate	KEYWORD2
+parseDecimal	KEYWORD2
+latitudeConverToDMS	KEYWORD2
+LongitudeConverToDMS	KEYWORD2
+parseGPRMC	KEYWORD2
+getGPRMC	KEYWORD2
+getGPS	KEYWORD2
 
 #######################################
 # Instances (KEYWORD3)
 #######################################
 
-mode	KEYWORD3
-csPin	KEYWORD3
+GPSdata	KEYWORD3
+latDMS	KEYWORD3
+longDMS	KEYWORD3
 
 #######################################
 # Constants (LITERAL1)
 #######################################
 
-ENS160_COMMAND_NOP	LITERAL1
-ENS160_COMMAND_GET_APPVER	LITERAL1
-ENS160_COMMAND_CLRGPR	LITERAL1
-ENS160_SLEEP_MODE	LITERAL1
-ENS160_IDLE_MODE	LITERAL1
-ENS160_STANDARD_MODE	LITERAL1
-NO_ERR	LITERAL1
-ERR_DATA_BUS	LITERAL1
-ERR_IC_VERSION	LITERAL1
-eINTPinActiveLow	LITERAL1
-eINTPinActiveHigh	LITERAL1
-eINTPinOD	LITERAL1
-eINTPinPP	LITERAL1
-eINTModeDIS	LITERAL1
-eINTModeEN	LITERAL1
-validityFlag	LITERAL1
-eNormalOperation	LITERAL1
-eWarmUpPhase	LITERAL1
-eInitialStartUpPhase	LITERAL1
-eInvalidOutput	LITERAL1
+CLOSED	LITERAL1
+TCP	LITERAL1
+UDP	LITERAL1

@@ -1,15 +1,20 @@
-/*
-### Connect TCP and send GET request.
-1. This example is used to test DFRobot_SIM808 GPS/GPRS/GSM Shield's connect TCP and send GET request.
-2. Open the SIM808_TCPConnection example or copy these code to your project
-3. Download and dial the function switch to Arduino
-4. Open serial helper
-5. Waiting for a few minutes, until serial has sent "Connect mbed.org success"
-6. Serial will send "Hello world!"
-
-create on 2016/09/23, version: 1.0
-by jason
-*/
+/*!
+ * @file  SIM808_TCPConnection.ino
+ * @brief  Connect TCP and send GET request.
+ * @details  1. This example is used to test DFRobot_SIM808 GPS/GPRS/GSM Shield's connect TCP and send GET request.
+ * @n        2. Open the SIM808_TCPConnection example or copy these code to your project
+ * @n        3. Download and dial the function switch to Arduino
+ * @n        4. Open serial helper
+ * @n        5. Waiting for a few minutes, until serial has sent "Connect mbed.org success"
+ * @n        6. Serial will send "Hello world!"
+ * @copyright  Copyright (c) 2010 DFRobot Co.Ltd (http://www.dfrobot.com)
+ * @license  The MIT License (MIT)
+ * @author  [Jason](jason.ling@dfrobot.com)
+ * @maintainer  [qsjhyy](yihuan.huang@dfrobot.com)
+ * @version  V1.0
+ * @date  2022-02-08
+ * @url  https://github.com/DFRobot/DFRobot_SIM808
+ */
 #include <DFRobot_SIM808.h>
 #include <SoftwareSerial.h>
 

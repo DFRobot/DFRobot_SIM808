@@ -1,13 +1,18 @@
-/*
-### Send SMS messages
-1. This example is used to test DFRobot_SIM808 GPS/GPRS/GSM Shield's send SMS func.
-2. Open the SIM808_SendSMS example or copy these code to your project
-3. Replace the phoneNumber：#define PHONE_NUMBER  "187******39"    
-4. Download and dial the function switch to Arduino, and enjoy it
-
-create on 2016/09/23, version: 1.0
-by jason
-*/
+/*!
+ * @file  SIM808_SendSMS.ino
+ * @brief  Send SMS messages
+ * @details  1. This example is used to test DFRobot_SIM808 GPS/GPRS/GSM Shield's send SMS func.
+ * @n        2. Open the SIM808_SendSMS example or copy these code to your project
+ * @n        3. Replace the phoneNumber：#define PHONE_NUMBER  "187******39"
+ * @n        4. Download and dial the function switch to Arduino, and enjoy it
+ * @copyright  Copyright (c) 2010 DFRobot Co.Ltd (http://www.dfrobot.com)
+ * @license  The MIT License (MIT)
+ * @author  [Jason](jason.ling@dfrobot.com)
+ * @maintainer  [qsjhyy](yihuan.huang@dfrobot.com)
+ * @version  V1.0
+ * @date  2022-02-08
+ * @url  https://github.com/DFRobot/DFRobot_SIM808
+ */
 #include <DFRobot_SIM808.h>
 #include <SoftwareSerial.h>
 
