@@ -13,7 +13,9 @@
 #define __SIM808_H__
 
 #include <Arduino.h>
-#include <SoftwareSerial.h>
+#if !defined(ESP32)
+    #include <SoftwareSerial.h>
+#endif
 
 #define DEFAULT_TIMEOUT      5   //seconds
 #define DEFAULT_INTERCHAR_TIMEOUT   1500   //miliseconds

@@ -16,25 +16,47 @@
  * @url  https://github.com/DFRobot/DFRobot_SIM808
  */
 #include <DFRobot_SIM808.h>
-#include <SoftwareSerial.h>
 
-//#define PIN_TX    10
-//#define PIN_RX    11
-//SoftwareSerial mySerial(PIN_TX,PIN_RX);
-//DFRobot_SIM808 sim808(&mySerial);//Connect RX,TX,PWR,
-
-//make sure that the baud rate of SIM900 is 9600!
-//you can use the AT Command(AT+IPR=9600) to set it through SerialDebug
-
-DFRobot_SIM808 sim808(&Serial);
+/**
+ * Besides push-in connection with expansion board, it can also be connected by jump wires
+ * Set DIP switch to 3-Arduino, open the following macro
+ * Connect the main controller to the module with Dupont wires:
+ *  Arduino | module
+ *   PIN_TX |  TX1
+ *   PIN_RX |  RX1
+ * Power the module, which is successful when the power indicator on the module is ON
+ */
+// #define CONNECT_BY_JUMPER   1
+#if CONNECT_BY_JUMPER
+  #define PIN_TX    10
+  #define PIN_RX    11
+  SoftwareSerial mySerial(PIN_TX, PIN_RX);
+  DFRobot_SIM808 sim808(&mySerial);
+/**
+ * Use Leonardo for push-in connection
+ * Set DIP switch to 3-Arduino, and use the Serial1 of Leonardo for communication
+ */
+#elif defined(ARDUINO_AVR_LEONARDO)
+  DFRobot_SIM808 sim808(&Serial1);
+/**
+ * Use UNO & MEGA2560 for push-in connection
+ * Set DIP switch to 3-Arduino, and use the Serial of UNO and MEGA2560 for communication
+ */
+#else
+  DFRobot_SIM808 sim808(&Serial);
+#endif
 
 char http_cmd[] = "GET /media/uploads/mbed_official/hello.txt HTTP/1.0\r\n\r\n";
 char buffer[512];
 
-void setup(){
-  //mySerial.begin(9600);
+void setup() {
+  #if CONNECT_BY_JUMPER
+    mySerial.begin(9600);
+  #elif defined(ARDUINO_AVR_LEONARDO)
+    Serial1.begin(9600);
+  #endif
   Serial.begin(9600);
-  
+
   //******** Initialize sim808 module *************
   while(!sim808.init()) {
       delay(1000);

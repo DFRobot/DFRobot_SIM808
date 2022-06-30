@@ -27,9 +27,12 @@ void  sim808_init(void * uart_device, uint32_t baud)
 void  sim808_init(void * uart_device, char num)
 {
     if(num)
-		serialSIM808 = (HardwareSerial*)uart_device;
-	else
+	    serialSIM808 = (HardwareSerial*)uart_device;
+	else{
+        #if !defined(ESP32)
 		serialSIM808 = (SoftwareSerial*)uart_device;
+        #endif
+    }
 }
 
 

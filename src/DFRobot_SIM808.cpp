@@ -32,18 +32,21 @@ DFRobot_SIM808::DFRobot_SIM808(HardwareSerial *mySerial)
     sim808_init(mySerial, 1);
 }
 
-DFRobot_SIM808::DFRobot_SIM808(SoftwareSerial *mySerial)
-{
-    inst = this;
-	serialFlag = 0;
-	gprsSerial = mySerial;
-   sim808_init(mySerial, 0);
-}
+#if !defined(ESP32)
+    DFRobot_SIM808::DFRobot_SIM808(SoftwareSerial *mySerial)
+    {
+        inst = this;
+    	serialFlag = 0;
+    	gprsSerial = mySerial;
+       sim808_init(mySerial, 0);
+    }
+#endif
 
 bool DFRobot_SIM808::init(void)
 {
 	if(!sim808_check_with_cmd("AT\r\n","OK\r\n",CMD)){   
 	    
+        // Serial.println("-------");
 		return false;
 		
     }
@@ -775,13 +778,17 @@ void DFRobot_SIM808::listen(void)
 {
 	 if(serialFlag)
 		; //hgprsSerial->listen();
-	 else
-		 gprsSerial->listen();
+	 else{
+        #if !defined(ESP32)
+		    gprsSerial->listen();
+        #endif
+     }
 
 }
 
 bool DFRobot_SIM808::isListening(void)
 {
+    return false;
 	// if(serialFlag)
 		// return hgprsSerial.isListening();
 	// else

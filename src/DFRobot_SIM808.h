@@ -29,7 +29,9 @@ class DFRobot_SIM808
 {
 public:
 
-    SoftwareSerial *gprsSerial;
+    #if !defined(ESP32)
+        SoftwareSerial *gprsSerial;
+    #endif
     HardwareSerial *hgprsSerial;
     Stream *sgprsSerial;
 
@@ -70,7 +72,9 @@ public:
      * @n Tx, rx, and baudRate can also be passed in this order
      * @return None
      */
-    DFRobot_SIM808(SoftwareSerial *mySerial);
+    #if !defined(ESP32)
+        DFRobot_SIM808(SoftwareSerial *mySerial);
+    #endif
     DFRobot_SIM808(HardwareSerial *mySerial);
     DFRobot_SIM808(uint8_t tx, uint8_t rx, uint32_t baudRate = 9600);
 

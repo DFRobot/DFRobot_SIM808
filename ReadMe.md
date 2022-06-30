@@ -452,6 +452,7 @@ Arduino Leonardo   |      √       |              |             |
 ## History
 
 - 2022/02/08 - Version 1.0.0 released.
+- 2022/06/30 - Version 1.0.1 released.
 
 
 ## Credits
